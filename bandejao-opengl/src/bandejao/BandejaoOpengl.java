@@ -33,7 +33,7 @@ public class BandejaoOpengl extends GLJPanelInteractive{
         catraca_ = new Catraca(drawable);
         maquinaCartao_ = new MaquinaCartao(drawable);
         carrinhoComida_ = new CarrinhoComida(drawable);
-		/////camera_ = new Camera(drawable);
+		camera_ = new Camera(drawable);
 
         //Devemos colocar lighting em init e em display pois senão a luz iria rotacionar junto com a câmera
         lighting(drawable);
@@ -79,9 +79,9 @@ public class BandejaoOpengl extends GLJPanelInteractive{
         estante_.desenha(drawable);
         gl.glTranslatef(-4.0f, 0.0f, -3.0f);
 
-		//gl.glTranslatef(3.0f,0.0f,-3.0f);
-		//camera_.desenha(drawable);
-		//gl.glTranslatef(-3.0f,0.0f,3.0f);
+		gl.glTranslatef(-3.5f,6.0f,-8.0f);
+		camera_.desenha(drawable);
+		gl.glTranslatef(3.5f,-6.0f,8.0f);
 
         gl.glTranslatef(0.0f, 1.627f, 0.0f);
         maquinaCartao_.desenha(drawable);
