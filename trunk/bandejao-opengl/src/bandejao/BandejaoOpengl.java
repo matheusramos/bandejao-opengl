@@ -26,6 +26,7 @@ public class BandejaoOpengl extends GLJPanelInteractive{
                 //Compila todos os modelos da cena
         piso = new Piso(drawable);      
         catraca = new Catraca(drawable);
+		extintor = new Extintor(drawable);
         maquinaCartao = new MaquinaCartao(drawable);
         gradeEntrada = new GradeEntrada(drawable);
         gradeMaquinaCartao = new GradeMaquinaCartao(drawable);
@@ -53,7 +54,8 @@ public class BandejaoOpengl extends GLJPanelInteractive{
         
         piso.desenha(drawable);     
         gradeMaquinaCartao.desenha(drawable);
-        gradeMaquinaCartao2.desenha(drawable);      
+        gradeMaquinaCartao2.desenha(drawable);
+		extintor.desenha(drawable);
         
         gl.glTranslatef(0.0f, 1.627f, 0.0f);
         maquinaCartao.desenha(drawable);
@@ -171,6 +173,7 @@ public class BandejaoOpengl extends GLJPanelInteractive{
  */
     private Piso piso;
     private static Catraca catraca;
+	private static Extintor extintor;
     private static MaquinaCartao maquinaCartao;
     private static GradeMaquinaCartao gradeMaquinaCartao;
     private static GradeMaquinaCartao2 gradeMaquinaCartao2;
