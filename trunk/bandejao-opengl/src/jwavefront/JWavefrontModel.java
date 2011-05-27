@@ -45,7 +45,7 @@ public class JWavefrontModel {
      * render with materials
      */
     public static final int WF_MATERIAL = (1 << 4);
-
+    
     /**
      * Construct a JWavefrontModel object.
      * @param file The file containing the object.
@@ -109,7 +109,7 @@ public class JWavefrontModel {
         /* calculate unitizing scale factor */
         scale = 2.0f / Math.max(Math.max(w, h), d);
 
-        /*  translate around center then scale */
+        /* translate around center then scale */
         for (int i = 1; i <= numvertices; i++) {
             vertices[3 * i + 0] -= cx;
             vertices[3 * i + 1] -= cy;
@@ -560,7 +560,7 @@ public class JWavefrontModel {
     }
 
     /**
-     * Second pass at a Wavefront OBJ file that gets all the data.
+     * Second pass at a Wavefront OBJ file that gets all the data. 
      * @param file The file containing the Wavefront model.
      * @throws IOException
      */
@@ -1026,7 +1026,7 @@ public class JWavefrontModel {
     }
 
     /**
-     * Read a wavefront material library file.
+     * Read a wavefront material library file. 
      * @param name The filename of the material file
      * @throws IOException
      */
@@ -1252,7 +1252,7 @@ public class JWavefrontModel {
      *            WF_TEXTURE -  write texture coords
      *            WF_FLAT and WF_SMOOTH should not both be specified.
      */
-    private void draw(GLAutoDrawable gLAutoDrawable, int mode) {
+    private void draw(GLAutoDrawable gLAutoDrawable, int mode) {      
         GL gl = gLAutoDrawable.getGL();
 
         assert (vertices != null);
@@ -1401,7 +1401,7 @@ public class JWavefrontModel {
             gl.glEnd();
 
             group = group.next;
-        }
+        }      
     }
 
     public boolean inside(GLAutoDrawable gLAutoDrawable){
@@ -1610,7 +1610,54 @@ public class JWavefrontModel {
         if(inside == true || insideCenter == true)
             return true;
         else
-            return false;
+            return false;     
+    }
+
+    public boolean conflito(float x_camera, float z_camera){
+        boolean conflitoModelo = false;
+        float minx, maxx;
+        float miny, maxy;
+        float minz, maxz;
+
+        /* get the max/mins */
+        maxx = minx = vertices[3 + 0];
+        maxy = miny = vertices[3 + 1];
+        maxz = minz = vertices[3 + 2];
+
+        for (int i = 1; i <= numvertices; i++) {
+            if (maxx < vertices[3 * i + 0]) {
+                maxx = vertices[3 * i + 0];
+            }
+            if (minx > vertices[3 * i + 0]) {
+                minx = vertices[3 * i + 0];
+            }
+
+            if (maxy < vertices[3 * i + 1]) {
+                maxy = vertices[3 * i + 1];
+            }
+            if (miny > vertices[3 * i + 1]) {
+                miny = vertices[3 * i + 1];
+            }
+
+            if (maxz < vertices[3 * i + 2]) {
+                maxz = vertices[3 * i + 2];
+            }
+            if (minz > vertices[3 * i + 2]) {
+                minz = vertices[3 * i + 2];
+            }
+        }
+
+        minx -= 0.15;
+        maxx += 0.15;
+        miny -= 0.15;
+        maxy += 0.15;
+        minz -= 0.15;
+        maxz += 0.15;
+
+        if(x_camera >= minx && x_camera <= maxx && z_camera >= minz && z_camera <= maxz)
+            conflitoModelo = true;
+
+        return conflitoModelo;
     }
 
     /**

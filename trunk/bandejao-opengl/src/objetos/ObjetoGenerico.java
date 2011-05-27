@@ -2,8 +2,6 @@ package objetos;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 import jwavefront.JWavefrontModel;
@@ -21,9 +19,7 @@ public class ObjetoGenerico {
 
         try {
             model = new JWavefrontModel(new File(filename));
-        } catch (IOException ex) {
-            Logger.getLogger(Mesa.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } catch (IOException ex) {}
         model.facetNormals();
 
         objectid = gl.glGenLists(1);
@@ -36,6 +32,10 @@ public class ObjetoGenerico {
         //Teste para ver se o modelo estiver dentro da visão visão da câmera
         if(model.inside(drawable) == true)
             gl.glCallList(objectid);
+    }
+    
+    public boolean conflito(float x_camera, float z_camera){
+        return model.conflito(x_camera, z_camera);
     }
 
     private JWavefrontModel model;
