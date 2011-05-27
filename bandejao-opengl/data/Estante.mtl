@@ -1,9 +1,9 @@
-# Blender MTL File: 'Mesa.blend'
+# Blender MTL File: 'quit.blend'
 # Material Count: 1
-newmtl Material.075
-Ns 96.078431
+newmtl Material.025
+Ns 92.156863
 Ka 0.000000 0.000000 0.000000
-Kd 0.007777 0.007777 0.129624
+Kd 0.006222 0.006222 0.103699
 Ks 0.500000 0.500000 0.500000
 Ni 1.000000
 d 1.000000

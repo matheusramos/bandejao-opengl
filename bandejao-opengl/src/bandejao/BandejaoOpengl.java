@@ -22,18 +22,18 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 		//OpenGl Parâmetros: Mudaremos
         GL gl = drawable.getGL();
         gl.glEnable(GL.GL_DEPTH_TEST);
-
-        //Compila todos os modelos da cena
-        mesa_ = new Mesa(drawable);
-        piso_ = new Piso(drawable);
-        suco_ = new Suco(drawable);
-        pilar_ = new Pilar(drawable);
-        grade_ = new Grade(drawable);
-        estante_ = new Estante(drawable);
-        catraca_ = new Catraca(drawable);
-        maquinaCartao_ = new MaquinaCartao(drawable);
-        carrinhoComida_ = new CarrinhoComida(drawable);
-		camera_ = new Camera(drawable);
+                
+                //Compila todos os modelos da cena
+        piso = new Piso(drawable);      
+        catraca = new Catraca(drawable);
+        maquinaCartao = new MaquinaCartao(drawable);
+        gradeEntrada = new GradeEntrada(drawable);
+        gradeMaquinaCartao = new GradeMaquinaCartao(drawable);
+        gradeMaquinaCartao2 = new GradeMaquinaCartao2(drawable);
+        portaFechada = new PortaFechada(drawable);
+        portaAberta = new PortaAberta(drawable);
+        paredeEntrada1 = new ParedeEntrada1(drawable);
+        paredeEntrada2 = new ParedeEntrada2(drawable);
 
         //Devemos colocar lighting em init e em display pois senão a luz iria rotacionar junto com a câmera
         lighting(drawable);
@@ -47,59 +47,31 @@ public class BandejaoOpengl extends GLJPanelInteractive{
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
         //O método lighting também é colocado aqui pois senão a luz iria girar junto com a câmera
-        lighting(drawable);
+        lighting(drawable);    
 
         gl.glMatrixMode(GL.GL_MODELVIEW);
-
-        gl.glTranslatef(0.0f, 0.0f, -5.0f);
-        piso_.desenha(drawable);
-        gl.glTranslatef(0.0f, 0.0f, 5.0f);
-
-        gl.glTranslatef(-8.0f, 0.0f, -2.0f);
-        suco_.desenha(drawable);
-        gl.glTranslatef(8.0f, 0.0f, 2.0f);
-
-        gl.glTranslatef(-8.0f, 0.0f, -6.0f);
-        mesa_.desenha(drawable);
-        gl.glTranslatef(8.0f, 0.0f, 6.0f);
-
-        gl.glTranslatef(-4.0f, 0.0f, -8.0f);
-        pilar_.desenha(drawable);
-        gl.glTranslatef(4.0f, 0.0f, 8.0f);
-
-        gl.glTranslatef(0.0f, 0.0f, -8.0f);
-        carrinhoComida_.desenha(drawable);
-        gl.glTranslatef(0.0f, 0.0f, 8.0f);
-
-        gl.glTranslatef(-4.0f, 0.0f, 3.0f);
-        grade_.desenha(drawable);
-        gl.glTranslatef(4.0f, 0.0f, -3.0f);
-
-        gl.glTranslatef(4.0f, 0.0f, 3.0f);
-        estante_.desenha(drawable);
-        gl.glTranslatef(-4.0f, 0.0f, -3.0f);
-
-		gl.glTranslatef(-3.5f,6.0f,-8.0f);
-		camera_.desenha(drawable);
-		gl.glTranslatef(3.5f,-6.0f,8.0f);
-
+        
+        piso.desenha(drawable);     
+        gradeMaquinaCartao.desenha(drawable);
+        gradeMaquinaCartao2.desenha(drawable);      
+        
         gl.glTranslatef(0.0f, 1.627f, 0.0f);
-        maquinaCartao_.desenha(drawable);
-		
+        maquinaCartao.desenha(drawable);
+        gradeEntrada.desenha(drawable);
+        portaFechada.desenha(drawable);
+        portaAberta.desenha(drawable);
+        paredeEntrada1.desenha(drawable);
+        paredeEntrada2.desenha(drawable);
 
-
-        angle_ += 10;
-        gl.glRotatef(angle_, -1.0f, -1.0f, 0.0f);
-        catraca_.desenha(drawable);
+        gl.glRotatef(angle, -1.0f, -1.0f, 0.0f);
+        catraca.desenha(drawable);
 
         gl.glRotatef(120, -1.0f, -1.0f, 0.0f);
-        catraca_.desenha(drawable);
+        catraca.desenha(drawable);
 
         gl.glRotatef(-240, -1.0f, -1.0f, 0.0f);
-        catraca_.desenha(drawable);
-
-
-
+        catraca.desenha(drawable);
+              
         gl.glFlush(); //execute all commands
     }
 	
@@ -119,18 +91,17 @@ public class BandejaoOpengl extends GLJPanelInteractive{
         //    onde a luz será posicionada, sendo que a direção e o sentido da luz sempre será para o ponto da origem (0,0,0).
 
         float[] luzDifusa = new float[]{1.0f, 1.0f, 1.0f, 1.0f};
-        float[] luzEspecular = new float[]{0.5f, 0.5f, 0.5f, 1.0f};
-        float[] posicaoLuz = new float[]{-100.0f, 50f, 50.0f, 0.0f};
+        float[] luzEspecular = new float[]{0.4f, 0.4f, 0.4f, 1.0f};
+        float[] posicaoLuz = new float[]{50.0f, 20.0f, 100.0f, 0.0f};
+        float[] posicaoLuz2 = new float[]{-50.0f, 10.0f, -100.0f, 0.0f};
 
         gl.glLightfv(GL.GL_LIGHT0, GL.GL_DIFFUSE, luzDifusa, 0);
         gl.glLightfv(GL.GL_LIGHT0, GL.GL_SPECULAR, luzEspecular, 0);
         gl.glLightfv(GL.GL_LIGHT0, GL.GL_POSITION, posicaoLuz, 0);
-
-        posicaoLuz = new float[]{100.0f, 50f, -50.0f, 0.0f};
-
+        
         gl.glLightfv(GL.GL_LIGHT1, GL.GL_DIFFUSE, luzDifusa, 0);
         gl.glLightfv(GL.GL_LIGHT1, GL.GL_SPECULAR, luzEspecular, 0);
-        gl.glLightfv(GL.GL_LIGHT1, GL.GL_POSITION, posicaoLuz, 0);
+        gl.glLightfv(GL.GL_LIGHT1, GL.GL_POSITION, posicaoLuz2, 0);
 
         //Define que os dois lados de um plano serão iluminados
         gl.glLightModeli(GL.GL_LIGHT_MODEL_TWO_SIDE, GL.GL_TRUE);
@@ -138,6 +109,42 @@ public class BandejaoOpengl extends GLJPanelInteractive{
         gl.glEnable(GL.GL_LIGHTING);
         gl.glEnable(GL.GL_LIGHT0);
         gl.glEnable(GL.GL_LIGHT1);
+    }
+    
+    public static boolean conflitoModelo(float x_camera, float z_camera, float delta) {
+        if(maquinaCartao.conflito(x_camera, z_camera))
+            return maquinaCartao.conflito(x_camera, z_camera);     
+                
+        else if(gradeMaquinaCartao.conflito(x_camera, z_camera))
+            return gradeMaquinaCartao.conflito(x_camera, z_camera);
+                
+        else if(gradeMaquinaCartao2.conflito(x_camera, z_camera))
+            return gradeMaquinaCartao2.conflito(x_camera, z_camera);
+                
+        else if(portaFechada.conflito(x_camera, z_camera))
+            return portaFechada.conflito(x_camera, z_camera);
+                
+        else if(portaAberta.conflito(x_camera, z_camera))
+            return portaAberta.conflito(x_camera, z_camera);
+                
+        else if(paredeEntrada1.conflito(x_camera, z_camera))
+            return paredeEntrada1.conflito(x_camera, z_camera);
+                
+        else if(paredeEntrada2.conflito(x_camera, z_camera))
+            return paredeEntrada2.conflito(x_camera, z_camera);
+        
+        else if(catraca.conflito(x_camera, z_camera)){
+            if(delta <= 0 && angle <= 121)
+                angle += 10;
+            else if(delta >= 0 && angle >= -1)
+                angle -= 10;
+            
+            System.out.printf("\n%f",angle);
+            
+            return false;
+        }
+        else
+            return false;
     }
 
 	public static void main(String[] args) throws IOException {
@@ -162,16 +169,16 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 /*
  * Váriavei de Classe -> Terminação com o caractere "_"
  */
-	private Mesa mesa_;
-    private Piso piso_;
-    private Suco suco_;
-    private Pilar pilar_;
-    private Grade grade_;
-    private Estante estante_;
-    private Catraca catraca_;
-	private Camera camera_;
-    private CarrinhoComida carrinhoComida_;
-    private MaquinaCartao maquinaCartao_;
-    private float angle_ = 0;
+    private Piso piso;
+    private static Catraca catraca;
+    private static MaquinaCartao maquinaCartao;
+    private static GradeMaquinaCartao gradeMaquinaCartao;
+    private static GradeMaquinaCartao2 gradeMaquinaCartao2;
+    private static GradeEntrada gradeEntrada;
+    private static PortaFechada portaFechada;
+    private static PortaAberta portaAberta;
+    private static ParedeEntrada1 paredeEntrada1;
+    private static ParedeEntrada2 paredeEntrada2;
+    private static float angle = 0;
 }
 
