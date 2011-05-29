@@ -23,11 +23,12 @@ public class BandejaoOpengl extends GLJPanelInteractive{
         GL gl = drawable.getGL();
         gl.glEnable(GL.GL_DEPTH_TEST);
                 
-                //Compila todos os modelos da cena
+		//Compila todos os modelos da cena
         piso = new Piso(drawable);      
         catraca = new Catraca(drawable);
 		extintor = new Extintor(drawable);
         maquinaCartao = new MaquinaCartao(drawable);
+		mesa = new Mesa(drawable);
         gradeEntrada = new GradeEntrada(drawable);
         gradeMaquinaCartao = new GradeMaquinaCartao(drawable);
         gradeMaquinaCartao2 = new GradeMaquinaCartao2(drawable);
@@ -35,7 +36,7 @@ public class BandejaoOpengl extends GLJPanelInteractive{
         portaAberta = new PortaAberta(drawable);
         paredeEntrada1 = new ParedeEntrada1(drawable);
         paredeEntrada2 = new ParedeEntrada2(drawable);
-
+		
         //Devemos colocar lighting em init e em display pois senão a luz iria rotacionar junto com a câmera
         lighting(drawable);
     }
@@ -56,6 +57,8 @@ public class BandejaoOpengl extends GLJPanelInteractive{
         gradeMaquinaCartao.desenha(drawable);
         gradeMaquinaCartao2.desenha(drawable);
 		extintor.desenha(drawable);
+
+		desenharMesas(drawable);
         
         gl.glTranslatef(0.0f, 1.627f, 0.0f);
         maquinaCartao.desenha(drawable);
@@ -64,6 +67,7 @@ public class BandejaoOpengl extends GLJPanelInteractive{
         portaAberta.desenha(drawable);
         paredeEntrada1.desenha(drawable);
         paredeEntrada2.desenha(drawable);
+
 
         gl.glRotatef(angle, -1.0f, -1.0f, 0.0f);
         catraca.desenha(drawable);
@@ -75,12 +79,28 @@ public class BandejaoOpengl extends GLJPanelInteractive{
         catraca.desenha(drawable);
               
         gl.glFlush(); //execute all commands
+
+
     }
 	
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {   
     }
 	public void displayChanged(GLAutoDrawable drawable, boolean modeChanged, boolean deviceChanged) {
     }
+
+	private void desenharMesas(GLAutoDrawable drawable){
+		GL gl = drawable.getGL();
+		final float ESPACO_ENTRE_MESAS = 3.5f;
+		int i=0;
+
+		/*Primeira Fileira*/
+		gl.glTranslatef(-10f,0f,0f);
+		for(i=0; i<10; i++){
+			gl.glTranslatef(0f, 0f, ESPACO_ENTRE_MESAS);
+			mesa.desenha(drawable);
+		}
+		gl.glTranslatef(+10f, 0f, -i*ESPACO_ENTRE_MESAS);
+	}
 
     private void lighting(GLAutoDrawable drawable) {
         GL gl = drawable.getGL();
@@ -175,6 +195,7 @@ public class BandejaoOpengl extends GLJPanelInteractive{
     private static Catraca catraca;
 	private static Extintor extintor;
     private static MaquinaCartao maquinaCartao;
+	private static Mesa mesa;
     private static GradeMaquinaCartao gradeMaquinaCartao;
     private static GradeMaquinaCartao2 gradeMaquinaCartao2;
     private static GradeEntrada gradeEntrada;
