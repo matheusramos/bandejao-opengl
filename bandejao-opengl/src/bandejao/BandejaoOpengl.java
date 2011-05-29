@@ -140,6 +140,8 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 			mesa.desenha(drawable);
 		}
 		gl.glTranslatef(10f+ESPACO_ENTRE_FILEIRAS, 0f, i*ESPACO_ENTRE_MESAS-15);
+
+		//DEPOIS CONTINUO TENHO QUE IR CAGAR
 	}
 
     private void lighting(GLAutoDrawable drawable) {
