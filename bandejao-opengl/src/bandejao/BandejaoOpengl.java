@@ -34,6 +34,7 @@ public class BandejaoOpengl extends GLJPanelInteractive{
         gradeEntrada = new GradeEntrada(drawable);
         gradeMaquinaCartao = new GradeMaquinaCartao(drawable);
         gradeMaquinaCartao2 = new GradeMaquinaCartao2(drawable);
+		lixeira = new Lixeira(drawable);
         portaFechada = new PortaFechada(drawable);
         portaAberta = new PortaAberta(drawable);
         paredeEntrada1 = new ParedeEntrada1(drawable);
@@ -59,6 +60,11 @@ public class BandejaoOpengl extends GLJPanelInteractive{
         gradeMaquinaCartao.desenha(drawable);
         gradeMaquinaCartao2.desenha(drawable);
 		extintor.desenha(drawable);
+
+		gl.glTranslatef(-5f,0,2.5f);
+		lixeira.desenha(drawable);
+		gl.glTranslatef(5f,0,-2.5f);
+
 
 		desenharMesas(drawable);
         
@@ -134,7 +140,7 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 
 		/*Segunda Fileira*/
 		gl.glTranslatef(-10f-ESPACO_ENTRE_FILEIRAS,0f,15f);
-		for(i=0; it.hasNext() && i<4; i++){
+		for(i=0; it.hasNext() && i<6; i++){
 			gl.glTranslatef(0f, 0f, -ESPACO_ENTRE_MESAS);
 			mesa = (Mesa) it.next();
 			mesa.desenha(drawable);
@@ -241,6 +247,7 @@ public class BandejaoOpengl extends GLJPanelInteractive{
     private static GradeMaquinaCartao gradeMaquinaCartao;
     private static GradeMaquinaCartao2 gradeMaquinaCartao2;
     private static GradeEntrada gradeEntrada;
+	private static Lixeira lixeira;
     private static PortaFechada portaFechada;
     private static PortaAberta portaAberta;
     private static ParedeEntrada1 paredeEntrada1;
