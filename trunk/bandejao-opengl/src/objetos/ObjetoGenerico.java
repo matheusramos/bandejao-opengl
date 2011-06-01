@@ -25,6 +25,23 @@ public class ObjetoGenerico {
         objectid = gl.glGenLists(1);
         objectid = model.compile(drawable, JWavefrontModel.WF_FLAT | JWavefrontModel.WF_MATERIAL );
     }
+    
+    public ObjetoGenerico(GLAutoDrawable drawable, float delta_X, float delta_Z, String caminho_objeto) {
+        GL gl = drawable.getGL();
+
+        String filename = "./data/"+caminho_objeto;
+
+        try {
+            model = new JWavefrontModel(new File(filename));
+        } catch (IOException ex) {}
+        model.facetNormals();
+
+        objectid = gl.glGenLists(1);
+        objectid = model.compile(drawable, JWavefrontModel.WF_FLAT | JWavefrontModel.WF_MATERIAL );
+        
+        delta_x = delta_X;
+        delta_z = delta_Z;
+    }
 
     public void desenha(GLAutoDrawable drawable){
         GL gl = drawable.getGL();
@@ -35,9 +52,12 @@ public class ObjetoGenerico {
     }
     
     public boolean conflito(float x_camera, float z_camera){
-        return model.conflito(x_camera, z_camera);
+        return model.conflito(x_camera - delta_x, z_camera - delta_z);
     }
 
     private JWavefrontModel model;
     private int objectid;
+    
+    private float delta_x = 0.0f;
+    private float delta_z = 0.0f;
 }
