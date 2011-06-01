@@ -56,7 +56,7 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 
         gl.glMatrixMode(GL.GL_MODELVIEW);
         
-        //piso.desenha(drawable);
+        piso.desenha(drawable);
         gradeMaquinaCartao.desenha(drawable);
         gradeMaquinaCartao2.desenha(drawable);
 		extintor.desenha(drawable);
@@ -102,10 +102,12 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 	private void criarMesas(GLAutoDrawable drawable){
 		mesas_ = new ArrayList();
 		Mesa mesa;
-		for(int i=0; i<10; i++){
-			mesa = new Mesa(drawable);
-			mesas_.add(mesa);
-		}
+
+        mesa = new Mesa(drawable, -10.0f, 3.5f);
+		mesas_.add(mesa);
+
+        mesa = new Mesa(drawable, -10.0f, 7.0f);
+        mesas_.add(mesa);
 
 	}
 	/**
@@ -129,25 +131,26 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 		it = mesas_.iterator();
 
 		/*Primeira Fileira*/
-		gl.glTranslatef(-10f,0f,15f);	//Mesa Inicial
-		for(i=0; it.hasNext() && i<4; i++){
-			gl.glTranslatef(0f, 0f, -ESPACO_ENTRE_MESAS);
-			mesa = (Mesa) it.next();
-			mesa.desenha(drawable);
+		gl.glTranslatef(-10f,0f,0f);	//Mesa Inicial
+		for(i=0; it.hasNext() && i<2; i++){
+			gl.glTranslatef(0f, 0f, ESPACO_ENTRE_MESAS);
+				mesa = (Mesa) it.next();
+				mesa.desenha(drawable);
 		}
-		fileira++;
-		gl.glTranslatef(10f, 0f, i*ESPACO_ENTRE_MESAS-15);
+			gl.glTranslatef(10f,0f,-7.0f);
 
-		/*Segunda Fileira*/
+			/*
+			fileira++;
+		gl.glTranslatef(10f, 0f, i*ESPACO_ENTRE_MESAS-15);
 		gl.glTranslatef(-10f-ESPACO_ENTRE_FILEIRAS,0f,15f);
-		for(i=0; it.hasNext() && i<6; i++){
-			gl.glTranslatef(0f, 0f, -ESPACO_ENTRE_MESAS);
-			mesa = (Mesa) it.next();
-			mesa.desenha(drawable);
+
+			for(i=0; it.hasNext() && i<4; i++){
+				gl.glTranslatef(0f, 0f, -ESPACO_ENTRE_MESAS);
+				mesa = (Mesa) it.next();
+				mesa.desenha(drawable);
 		}
 		gl.glTranslatef(10f+ESPACO_ENTRE_FILEIRAS, 0f, i*ESPACO_ENTRE_MESAS-15);
-
-		//DEPOIS CONTINUO TENHO QUE IR CAGAR
+			*/
 	}
 
     private void lighting(GLAutoDrawable drawable) {
@@ -182,35 +185,43 @@ public class BandejaoOpengl extends GLJPanelInteractive{
     }
     
     public static boolean conflitoModelo(float x_camera, float z_camera, float delta) {
+        Mesa mesa;
+        for(Iterator it=mesas_.iterator(); it.hasNext();){
+            mesa = (Mesa) it.next();
+
+            if(mesa.conflito(x_camera, z_camera))
+                return mesa.conflito(x_camera, z_camera);
+        }
+
         if(maquinaCartao.conflito(x_camera, z_camera))
-            return maquinaCartao.conflito(x_camera, z_camera);     
-                
+            return maquinaCartao.conflito(x_camera, z_camera);
+
         else if(gradeMaquinaCartao.conflito(x_camera, z_camera))
             return gradeMaquinaCartao.conflito(x_camera, z_camera);
-                
+
         else if(gradeMaquinaCartao2.conflito(x_camera, z_camera))
             return gradeMaquinaCartao2.conflito(x_camera, z_camera);
-                
+
         else if(portaFechada.conflito(x_camera, z_camera))
             return portaFechada.conflito(x_camera, z_camera);
-                
+
         else if(portaAberta.conflito(x_camera, z_camera))
             return portaAberta.conflito(x_camera, z_camera);
-                
+
         else if(paredeEntrada1.conflito(x_camera, z_camera))
             return paredeEntrada1.conflito(x_camera, z_camera);
-                
+
         else if(paredeEntrada2.conflito(x_camera, z_camera))
             return paredeEntrada2.conflito(x_camera, z_camera);
-        
+
         else if(catraca.conflito(x_camera, z_camera)){
             if(delta <= 0 && angle <= 121)
                 angle += 10;
             else if(delta >= 0 && angle >= -1)
                 angle -= 10;
-            
+
             System.out.printf("\n%f",angle);
-            
+
             return false;
         }
         else
@@ -253,5 +264,8 @@ public class BandejaoOpengl extends GLJPanelInteractive{
     private static ParedeEntrada1 paredeEntrada1;
     private static ParedeEntrada2 paredeEntrada2;
     private static float angle = 0;
+
+    private float deltaX;
+    private float deltaZ;
 }
 
