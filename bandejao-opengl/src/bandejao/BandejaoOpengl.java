@@ -95,19 +95,41 @@ public class BandejaoOpengl extends GLJPanelInteractive{
     }
 	public void displayChanged(GLAutoDrawable drawable, boolean modeChanged, boolean deviceChanged) {
     }
+
 	/**
-	 * Cria as mesas no ArrayList
+	 * Cria as mesas no ArrayList.
+	 * Cria as mesas no exato lugar onde elas ficarão para que o conflito funcione, ou seja, caso for mudar as mesas de lugar, mude aqui.
+	 * Obs: As mesas são criadas no sentido de perto dos armários até perto da máquina de suco.
 	 * @param drawable
 	 */
 	private void criarMesas(GLAutoDrawable drawable){
+		GL gl = drawable.getGL();
 		mesas_ = new ArrayList();
 		Mesa mesa;
+		int i=0;
+		float x=0, z=0;
 
-        mesa = new Mesa(drawable, -10.0f, 3.5f);
-		mesas_.add(mesa);
+		/*Medidas referentes às mesas - Se for mudar, mude somente aqui*/
+		final float ESPACO_ENTRE_MESAS = 3.5f;
+		final float ESPACO_ENTRE_FILEIRAS = 4f;
+		final float ESPACO_FILEIRA_PRINCIPAL = 5f;
 
-        mesa = new Mesa(drawable, -10.0f, 7.0f);
-        mesas_.add(mesa);
+		/*Posicao da primeira mesa - Se for mudar, mude somente aqui e todas mesas mudarão*/
+		x = -10f;
+
+		for(i=0;i<4;i++){
+			z= i*ESPACO_ENTRE_MESAS;
+			gl.glTranslatef(x,0,z);
+			mesa = new Mesa(drawable,x,z);
+			mesas_.add(mesa);
+			gl.glTranslatef(-x,0,-z);
+		}
+
+//        mesa = new Mesa(drawable, -10.0f, 3.5f);
+//		mesas_.add(mesa);
+//
+//        mesa = new Mesa(drawable, -10.0f, 7.0f);
+//        mesas_.add(mesa);
 
 	}
 	/**
@@ -118,39 +140,45 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 	private void desenharMesas(GLAutoDrawable drawable){
 		GL gl = drawable.getGL();
 		Iterator it;	//Iterador
-		int i=0;		//Variável auxiliar que ajudará a transladar de volta ao local correto*/
-		int fileira=0;	//Número da fileira atual
+//		int i=0;		//Variável auxiliar que ajudará a transladar de volta ao local correto*/
+//		int fileira=0;	//Número da fileira atual
 		Mesa mesa;		//Váriavel temporária que armazenará as mesas
 
 		/*Medidas referentes às mesas*/
-		final float ESPACO_ENTRE_MESAS = 3.5f;
-		final float ESPACO_ENTRE_FILEIRAS = 4f;
-		final float ESPACO_FILEIRA_PRINCIPAL = 5f;
-
-		//Cria iterador
-		it = mesas_.iterator();
-
-		/*Primeira Fileira*/
-		gl.glTranslatef(-10f,0f,0f);	//Mesa Inicial
-		for(i=0; it.hasNext() && i<2; i++){
-			gl.glTranslatef(0f, 0f, ESPACO_ENTRE_MESAS);
-				mesa = (Mesa) it.next();
-				mesa.desenha(drawable);
+//		final float ESPACO_ENTRE_MESAS = 3.5f;
+//		final float ESPACO_ENTRE_FILEIRAS = 4f;
+//		final float ESPACO_FILEIRA_PRINCIPAL = 5f;
+		for(it = mesas_.iterator(); it.hasNext();){
+			mesa = (Mesa) it.next();
+			gl.glTranslatef(mesa.getDelta_x(),0,mesa.getDelta_z());
+			mesa.desenha(drawable);
+			//System.out.println(it.hasNext());
+			gl.glTranslatef(-mesa.getDelta_x(),0,-mesa.getDelta_z());
 		}
-			gl.glTranslatef(10f,0f,-7.0f);
-
-			/*
-			fileira++;
-		gl.glTranslatef(10f, 0f, i*ESPACO_ENTRE_MESAS-15);
-		gl.glTranslatef(-10f-ESPACO_ENTRE_FILEIRAS,0f,15f);
-
-			for(i=0; it.hasNext() && i<4; i++){
-				gl.glTranslatef(0f, 0f, -ESPACO_ENTRE_MESAS);
-				mesa = (Mesa) it.next();
-				mesa.desenha(drawable);
-		}
-		gl.glTranslatef(10f+ESPACO_ENTRE_FILEIRAS, 0f, i*ESPACO_ENTRE_MESAS-15);
-			*/
+//		//Cria iterador
+//		it = mesas_.iterator();
+//
+//		/*Primeira Fileira*/
+//		gl.glTranslatef(-10f,0f,0f);	//Mesa Inicial
+//		for(i=0; it.hasNext() && i<2; i++){
+//			gl.glTranslatef(0f, 0f, ESPACO_ENTRE_MESAS);
+//				mesa = (Mesa) it.next();
+//				mesa.desenha(drawable);
+//		}
+//			gl.glTranslatef(10f,0f,-7.0f);
+//
+//			/*
+//			fileira++;
+//		gl.glTranslatef(10f, 0f, i*ESPACO_ENTRE_MESAS-15);
+//		gl.glTranslatef(-10f-ESPACO_ENTRE_FILEIRAS,0f,15f);
+//
+//			for(i=0; it.hasNext() && i<4; i++){
+//				gl.glTranslatef(0f, 0f, -ESPACO_ENTRE_MESAS);
+//				mesa = (Mesa) it.next();
+//				mesa.desenha(drawable);
+//		}
+//		gl.glTranslatef(10f+ESPACO_ENTRE_FILEIRAS, 0f, i*ESPACO_ENTRE_MESAS-15);
+//			*/
 	}
 
     private void lighting(GLAutoDrawable drawable) {
