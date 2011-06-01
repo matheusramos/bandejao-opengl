@@ -64,47 +64,19 @@ public class JWavefrontModel {
     public float unitize() {
         assert (vertices != null);
 
-        float maxx, minx, maxy, miny, maxz, minz;
         float cx, cy, cz, w, h, d;
         float scale;
-
-        /* get the max/mins */
-        maxx = minx = vertices[3 + 0];
-        maxy = miny = vertices[3 + 1];
-        maxz = minz = vertices[3 + 2];
-
-        for (int i = 1; i <= numvertices; i++) {
-            if (maxx < vertices[3 * i + 0]) {
-                maxx = vertices[3 * i + 0];
-            }
-            if (minx > vertices[3 * i + 0]) {
-                minx = vertices[3 * i + 0];
-            }
-
-            if (maxy < vertices[3 * i + 1]) {
-                maxy = vertices[3 * i + 1];
-            }
-            if (miny > vertices[3 * i + 1]) {
-                miny = vertices[3 * i + 1];
-            }
-
-            if (maxz < vertices[3 * i + 2]) {
-                maxz = vertices[3 * i + 2];
-            }
-            if (minz > vertices[3 * i + 2]) {
-                minz = vertices[3 * i + 2];
-            }
-        }
+      
 
         /* calculate model width, height, and depth */
-        w = Math.abs(maxx) + Math.abs(minx);
-        h = Math.abs(maxy) + Math.abs(miny);
-        d = Math.abs(maxz) + Math.abs(minz);
+        w = Math.abs(max_x) + Math.abs(min_x);
+        h = Math.abs(max_y) + Math.abs(min_y);
+        d = Math.abs(max_z) + Math.abs(min_z);
 
         /* calculate center of the model */
-        cx = (maxx + minx) / 2.0f;
-        cy = (maxy + miny) / 2.0f;
-        cz = (maxz + minz) / 2.0f;
+        cx = (max_x + min_x) / 2.0f;
+        cy = (max_y + min_y) / 2.0f;
+        cz = (max_z + min_z) / 2.0f;
 
         /* calculate unitizing scale factor */
         scale = 2.0f / Math.max(Math.max(w, h), d);
@@ -128,41 +100,14 @@ public class JWavefrontModel {
      */
     public float[] dimensions() {
         assert (vertices != null);
-        float maxx, minx, maxy, miny, maxz, minz;
         float dimensions[] = new float[3];
 
-        /* get the max/mins */
-        maxx = minx = vertices[3 + 0];
-        maxy = miny = vertices[3 + 1];
-        maxz = minz = vertices[3 + 2];
-
-        for (int i = 1; i <= numvertices; i++) {
-            if (maxx < vertices[3 * i + 0]) {
-                maxx = vertices[3 * i + 0];
-            }
-            if (minx > vertices[3 * i + 0]) {
-                minx = vertices[3 * i + 0];
-            }
-
-            if (maxy < vertices[3 * i + 1]) {
-                maxy = vertices[3 * i + 1];
-            }
-            if (miny > vertices[3 * i + 1]) {
-                miny = vertices[3 * i + 1];
-            }
-
-            if (maxz < vertices[3 * i + 2]) {
-                maxz = vertices[3 * i + 2];
-            }
-            if (minz > vertices[3 * i + 2]) {
-                minz = vertices[3 * i + 2];
-            }
-        }
+        /* get the max/mins */      
 
         /* calculate model width, height, and depth */
-        dimensions[0] = Math.abs(maxx) + Math.abs(minx);
-        dimensions[1] = Math.abs(maxy) + Math.abs(miny);
-        dimensions[2] = Math.abs(maxz) + Math.abs(minz);
+        dimensions[0] = Math.abs(max_x) + Math.abs(min_x);
+        dimensions[1] = Math.abs(max_y) + Math.abs(min_y);
+        dimensions[2] = Math.abs(max_z) + Math.abs(min_z);
 
         return dimensions;
     }
@@ -1401,11 +1346,41 @@ public class JWavefrontModel {
             gl.glEnd();
 
             group = group.next;
-        }      
+        }
+        
+        maximos();
+    }
+    
+    public void maximos(){
+        max_x = min_x = vertices[3 + 0];
+        max_y = min_y = vertices[3 + 1];
+        max_z = min_z = vertices[3 + 2];
+
+        for (int i = 1; i <= numvertices; i++) {
+            if (max_x < vertices[3 * i + 0]) {
+                max_x = vertices[3 * i + 0];
+            }
+            if (min_x > vertices[3 * i + 0]) {
+                min_x = vertices[3 * i + 0];
+            }
+
+            if (max_y < vertices[3 * i + 1]) {
+                max_y = vertices[3 * i + 1];
+            }
+            if (min_y > vertices[3 * i + 1]) {
+                min_y = vertices[3 * i + 1];
+            }
+
+            if (max_z < vertices[3 * i + 2]) {
+                max_z = vertices[3 * i + 2];
+            }
+            if (min_z > vertices[3 * i + 2]) {
+                min_z = vertices[3 * i + 2];
+            }
+        }
     }
 
-    public boolean inside(GLAutoDrawable gLAutoDrawable){
-        float maxx, minx, maxy, miny, maxz, minz;
+    public boolean inside(GLAutoDrawable gLAutoDrawable){       
         GL gl = gLAutoDrawable.getGL();
 
         boolean inside = false;
@@ -1443,34 +1418,6 @@ public class JWavefrontModel {
 
         projAux = FloatBuffer.allocate(16);
         modlAux = FloatBuffer.allocate(16);
-
-        /* get the max/mins */
-        maxx = minx = vertices[3 + 0];
-        maxy = miny = vertices[3 + 1];
-        maxz = minz = vertices[3 + 2];
-
-        for (int i = 1; i <= numvertices; i++) {
-            if (maxx < vertices[3 * i + 0]) {
-                maxx = vertices[3 * i + 0];
-            }
-            if (minx > vertices[3 * i + 0]) {
-                minx = vertices[3 * i + 0];
-            }
-
-            if (maxy < vertices[3 * i + 1]) {
-                maxy = vertices[3 * i + 1];
-            }
-            if (miny > vertices[3 * i + 1]) {
-                miny = vertices[3 * i + 1];
-            }
-
-            if (maxz < vertices[3 * i + 2]) {
-                maxz = vertices[3 * i + 2];
-            }
-            if (minz > vertices[3 * i + 2]) {
-                minz = vertices[3 * i + 2];
-            }
-        }
 
         /* Get the current PROJECTION matrix from OpenGL */
         gl.glGetFloatv(GL.GL_PROJECTION_MATRIX, projAux);
@@ -1579,27 +1526,27 @@ public class JWavefrontModel {
         frustum[5][2] /= t;
         frustum[5][3] /= t;
 
-        inside1 = PointInFrustum(maxx, maxy, maxz, frustum);
-        inside2 = PointInFrustum(maxx, maxy, minz, frustum);
-        inside3 = PointInFrustum(maxx, miny, maxz, frustum);
-        inside4 = PointInFrustum(maxx, miny, minz, frustum);
-        inside5 = PointInFrustum(minx, maxy, maxz, frustum);
-        inside6 = PointInFrustum(minx, maxy, minz, frustum);
-        inside7 = PointInFrustum(minx, miny, maxz, frustum);
-        inside8 = PointInFrustum(minx, miny, minz, frustum);
-        inside1Center = PointInFrustum((maxx+minx)/2, maxy, maxz, frustum);
-        inside2Center = PointInFrustum((maxx+minx)/2, maxy, minz, frustum);
-        inside3Center = PointInFrustum((maxx+minx)/2, miny, maxz, frustum);
-        inside4Center = PointInFrustum((maxx+minx)/2, miny, minz, frustum);
-        inside5Center = PointInFrustum(maxx, (maxy+miny)/2, maxz, frustum);
-        inside6Center = PointInFrustum(maxx, (maxy+miny)/2, minz, frustum);
-        inside7Center = PointInFrustum(minx, (maxy+miny)/2, maxz, frustum);
-        inside8Center = PointInFrustum(minx, (maxy+miny)/2, minz, frustum);
-        inside9Center = PointInFrustum(maxx, maxy, (maxz+minz)/2, frustum);
-        inside10Center = PointInFrustum(maxx, miny, (maxz+minz)/2, frustum);
-        inside11Center = PointInFrustum(minx, maxy, (maxz+minz)/2, frustum);
-        inside12Center = PointInFrustum(minx, miny, (maxz+minz)/2, frustum);
-        Center = PointInFrustum((maxx+minx)/2, (maxy+miny)/2, (maxz+minz)/2, frustum);
+        inside1 = PointInFrustum(max_x, max_y, max_z, frustum);
+        inside2 = PointInFrustum(max_x, max_y, min_z, frustum);
+        inside3 = PointInFrustum(max_x, min_y, max_z, frustum);
+        inside4 = PointInFrustum(max_x, min_y, min_z, frustum);
+        inside5 = PointInFrustum(min_x, max_y, max_z, frustum);
+        inside6 = PointInFrustum(min_x, max_y, min_z, frustum);
+        inside7 = PointInFrustum(min_x, min_y, max_z, frustum);
+        inside8 = PointInFrustum(min_x, min_y, min_z, frustum);
+        inside1Center = PointInFrustum((max_x+min_x)/2, max_y, max_z, frustum);
+        inside2Center = PointInFrustum((max_x+min_x)/2, max_y, min_z, frustum);
+        inside3Center = PointInFrustum((max_x+min_x)/2, min_y, max_z, frustum);
+        inside4Center = PointInFrustum((max_x+min_x)/2, min_y, min_z, frustum);
+        inside5Center = PointInFrustum(max_x, (max_y+min_y)/2, max_z, frustum);
+        inside6Center = PointInFrustum(max_x, (max_y+min_y)/2, min_z, frustum);
+        inside7Center = PointInFrustum(min_x, (max_y+min_y)/2, max_z, frustum);
+        inside8Center = PointInFrustum(min_x, (max_y+min_y)/2, min_z, frustum);
+        inside9Center = PointInFrustum(max_x, max_y, (max_z+min_z)/2, frustum);
+        inside10Center = PointInFrustum(max_x, min_y, (max_z+min_z)/2, frustum);
+        inside11Center = PointInFrustum(min_x, max_y, (max_z+min_z)/2, frustum);
+        inside12Center = PointInFrustum(min_x, min_y, (max_z+min_z)/2, frustum);
+        Center = PointInFrustum((max_x+min_x)/2, (max_y+min_y)/2, (max_z+min_z)/2, frustum);
 
         if(inside1 == true || inside2 == true || inside3 == true || inside4 == true || inside5 == true || inside6 == true || inside7 == true || inside8 == true)
             inside = true;
@@ -1615,51 +1562,20 @@ public class JWavefrontModel {
 
     public boolean conflito(float x_camera, float z_camera){
         boolean conflitoModelo = false;
-        float minx, maxx;
-        float miny, maxy;
-        float minz, maxz;
+        float minx, maxx;      
+        float minz, maxz;      
 
-        /* get the max/mins */
-        maxx = minx = vertices[3 + 0];
-        maxy = miny = vertices[3 + 1];
-        maxz = minz = vertices[3 + 2];
-
-        for (int i = 1; i <= numvertices; i++) {
-            if (maxx < vertices[3 * i + 0]) {
-                maxx = vertices[3 * i + 0];
-            }
-            if (minx > vertices[3 * i + 0]) {
-                minx = vertices[3 * i + 0];
-            }
-
-            if (maxy < vertices[3 * i + 1]) {
-                maxy = vertices[3 * i + 1];
-            }
-            if (miny > vertices[3 * i + 1]) {
-                miny = vertices[3 * i + 1];
-            }
-
-            if (maxz < vertices[3 * i + 2]) {
-                maxz = vertices[3 * i + 2];
-            }
-            if (minz > vertices[3 * i + 2]) {
-                minz = vertices[3 * i + 2];
-            }
-        }
-
-        minx -= 0.15;
-        maxx += 0.15;
-        miny -= 0.15;
-        maxy += 0.15;
-        minz -= 0.15;
-        maxz += 0.15;
+        minx = min_x - 0.15f;
+        maxx = max_x + 0.15f;       
+        minz = min_z - 0.15f;
+        maxz = max_z + 0.15f;
 
         if(x_camera >= minx && x_camera <= maxx && z_camera >= minz && z_camera <= maxz)
             conflitoModelo = true;
 
         return conflitoModelo;
     }
-
+    
     /**
      * Method used to draw an object. The method compile() should be previously
      * called to create the disply list.
@@ -1941,4 +1857,11 @@ public class JWavefrontModel {
      * Position of the model
      */
     protected float position[];
+    
+    protected float delta_X = 0.0f;
+    protected float delta_Z = 0.0f;
+    
+    protected float min_x, max_x;
+    protected float min_y, max_y;
+    protected float min_z, max_z;
 }
