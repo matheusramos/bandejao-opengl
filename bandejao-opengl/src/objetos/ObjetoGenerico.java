@@ -55,6 +55,16 @@ public class ObjetoGenerico {
         return model.conflito(x_camera - delta_x, z_camera - delta_z);
     }
 
+	public float getDelta_x() {
+		return delta_x;
+	}
+
+	public float getDelta_z() {
+		return delta_z;
+	}
+
+	
+
     private JWavefrontModel model;
     private int objectid;
     
