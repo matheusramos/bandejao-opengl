@@ -106,79 +106,78 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 		GL gl = drawable.getGL();
 		mesas_ = new ArrayList();
 		Mesa mesa;
-		int i=0;
+		int i=0; //contara as mesas
+		int fileira=0; //fileira atual
 		float x=0, z=0;
 
-		/*Medidas referentes às mesas - Se for mudar, mude somente aqui*/
+		/*Medidas referentes às posições das mesas - Se for mudar, mude somente aqui*/
 		final float ESPACO_ENTRE_MESAS = 3.5f;
 		final float ESPACO_ENTRE_FILEIRAS = 4f;
 		final float ESPACO_FILEIRA_PRINCIPAL = 5f;
+		final float Z_INICIO = 10f;
+		final float X_INICIO = -10f;
+		final int X_FATOR = -1;
+		final int Z_FATOR = -1;
+		/*-------*/
+		
+		x = X_INICIO;
 
-		/*Posicao da primeira mesa - Se for mudar, mude somente aqui e todas mesas mudarão*/
-		x = -10f;
-
+		//Primeira Fileira
 		for(i=0;i<4;i++){
-			z= i*ESPACO_ENTRE_MESAS;
+			//z = Z_FATOR*(i*ESPACO_ENTRE_MESAS + Z_INICIO);
+			z = Z_FATOR*(i*ESPACO_ENTRE_MESAS) + Z_INICIO;
 			gl.glTranslatef(x,0,z);
 			mesa = new Mesa(drawable,x,z);
 			mesas_.add(mesa);
 			gl.glTranslatef(-x,0,-z);
 		}
 
-//        mesa = new Mesa(drawable, -10.0f, 3.5f);
-//		mesas_.add(mesa);
-//
-//        mesa = new Mesa(drawable, -10.0f, 7.0f);
-//        mesas_.add(mesa);
+		fileira++;	//atualiza o numero da fileira atual
+		x = X_FATOR*(fileira*ESPACO_ENTRE_FILEIRAS) + X_INICIO;
+		
+		//Segunda Fileira
+		for(i=0;i<6;i++){
+			z = Z_FATOR*(i*ESPACO_ENTRE_MESAS) + Z_INICIO;
+			gl.glTranslatef(x,0,z);
+			mesa = new Mesa(drawable,x,z);
+			mesas_.add(mesa);
+			gl.glTranslatef(-x,0,-z);
+		}
 
+		//Terceira Fileira até a quinta
+		do{
+			fileira++;	//atualiza o numero da fileira atual
+			x = X_FATOR*(fileira*ESPACO_ENTRE_FILEIRAS) + X_INICIO;
+
+			for(i=0;i<8;i++){
+				z = Z_FATOR*(i*ESPACO_ENTRE_MESAS) + Z_INICIO;
+				gl.glTranslatef(x,0,z);
+				mesa = new Mesa(drawable,x,z);
+				mesas_.add(mesa);
+				gl.glTranslatef(-x,0,-z);
+			}
+		}while(fileira<5);
+
+		//NAO TERMINEI AINDA, FICOU ABSURDO LERDO, VAMOS TER QUE FAZER ALGUMA COISA PRA NÃO DESENHAR MESAS DISTANTES
 	}
 	/**
-	 * Percorre o ArrayList e desenha (de perto dos ármarios para perto da cozinha) as mesas.
-	 *
+	 * Percorre o ArrayList e desenha as mesas.
+	 * Para mudar as mesas de lugar altere a função criarMesas.
 	 * @param drawable
 	 */
 	private void desenharMesas(GLAutoDrawable drawable){
 		GL gl = drawable.getGL();
 		Iterator it;	//Iterador
-//		int i=0;		//Variável auxiliar que ajudará a transladar de volta ao local correto*/
-//		int fileira=0;	//Número da fileira atual
 		Mesa mesa;		//Váriavel temporária que armazenará as mesas
 
-		/*Medidas referentes às mesas*/
-//		final float ESPACO_ENTRE_MESAS = 3.5f;
-//		final float ESPACO_ENTRE_FILEIRAS = 4f;
-//		final float ESPACO_FILEIRA_PRINCIPAL = 5f;
+
 		for(it = mesas_.iterator(); it.hasNext();){
 			mesa = (Mesa) it.next();
 			gl.glTranslatef(mesa.getDelta_x(),0,mesa.getDelta_z());
 			mesa.desenha(drawable);
-			//System.out.println(it.hasNext());
 			gl.glTranslatef(-mesa.getDelta_x(),0,-mesa.getDelta_z());
 		}
-//		//Cria iterador
-//		it = mesas_.iterator();
-//
-//		/*Primeira Fileira*/
-//		gl.glTranslatef(-10f,0f,0f);	//Mesa Inicial
-//		for(i=0; it.hasNext() && i<2; i++){
-//			gl.glTranslatef(0f, 0f, ESPACO_ENTRE_MESAS);
-//				mesa = (Mesa) it.next();
-//				mesa.desenha(drawable);
-//		}
-//			gl.glTranslatef(10f,0f,-7.0f);
-//
-//			/*
-//			fileira++;
-//		gl.glTranslatef(10f, 0f, i*ESPACO_ENTRE_MESAS-15);
-//		gl.glTranslatef(-10f-ESPACO_ENTRE_FILEIRAS,0f,15f);
-//
-//			for(i=0; it.hasNext() && i<4; i++){
-//				gl.glTranslatef(0f, 0f, -ESPACO_ENTRE_MESAS);
-//				mesa = (Mesa) it.next();
-//				mesa.desenha(drawable);
-//		}
-//		gl.glTranslatef(10f+ESPACO_ENTRE_FILEIRAS, 0f, i*ESPACO_ENTRE_MESAS-15);
-//			*/
+
 	}
 
     private void lighting(GLAutoDrawable drawable) {
