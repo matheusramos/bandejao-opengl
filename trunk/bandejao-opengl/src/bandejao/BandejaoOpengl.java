@@ -26,11 +26,13 @@ public class BandejaoOpengl extends GLJPanelInteractive{
         gl.glEnable(GL.GL_DEPTH_TEST);
                 
 		//Compila todos os modelos da cena
+		criarMesas(drawable);
+		criarEstantes(drawable);
+
         piso = new Piso(drawable);      
         catraca = new Catraca(drawable);
 		extintor = new Extintor(drawable);
         maquinaCartao = new MaquinaCartao(drawable);
-		criarMesas(drawable);
         gradeEntrada = new GradeEntrada(drawable);
         gradeMaquinaCartao = new GradeMaquinaCartao(drawable);
         gradeMaquinaCartao2 = new GradeMaquinaCartao2(drawable);
@@ -67,6 +69,7 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 
 
 		desenharMesas(drawable);
+		desenharEstantes(drawable);
         
         gl.glTranslatef(0.0f, 1.627f, 0.0f);
         maquinaCartao.desenha(drawable);
@@ -96,6 +99,13 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 	public void displayChanged(GLAutoDrawable drawable, boolean modeChanged, boolean deviceChanged) {
     }
 
+	/*
+	 *
+	 *	MÉTODOS PARA CRIAR OS OBJETOS
+	 *
+	 */
+
+
 	/**
 	 * Cria as mesas no ArrayList.
 	 * Cria as mesas no exato lugar onde elas ficarão para que o conflito funcione, ou seja, caso for mudar as mesas de lugar, mude aqui.
@@ -113,7 +123,7 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 		/*Medidas referentes às posições das mesas - Se for mudar, mude somente aqui*/
 		final float ESPACO_ENTRE_MESAS = 3.5f;
 		final float ESPACO_ENTRE_FILEIRAS = 4f;
-		final float ESPACO_FILEIRA_PRINCIPAL = 5f;
+		final float ESPACO_FILEIRA_PRINCIPAL = 2f;
 		final float Z_INICIO = 10f;
 		final float X_INICIO = -10f;
 		final int X_FATOR = -1;
@@ -124,7 +134,6 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 
 		//Primeira Fileira
 		for(i=0;i<4;i++){
-			//z = Z_FATOR*(i*ESPACO_ENTRE_MESAS + Z_INICIO);
 			z = Z_FATOR*(i*ESPACO_ENTRE_MESAS) + Z_INICIO;
 			gl.glTranslatef(x,0,z);
 			mesa = new Mesa(drawable,x,z);
@@ -158,8 +167,50 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 			}
 		}while(fileira<5);
 
+		//sexta e sétima fileira
+		do{
+			fileira++;	//atualiza o numero da fileira atual
+			x = X_FATOR*(fileira*ESPACO_ENTRE_FILEIRAS) + X_INICIO - ESPACO_FILEIRA_PRINCIPAL;
+
+			for(i=0;i<8;i++){
+				z = Z_FATOR*(i*ESPACO_ENTRE_MESAS) + Z_INICIO;
+				gl.glTranslatef(x,0,z);
+				mesa = new Mesa(drawable,x,z);
+				mesas_.add(mesa);
+				gl.glTranslatef(-x,0,-z);
+			}
+		}while(fileira<7);
+
 		//NAO TERMINEI AINDA, FICOU ABSURDO LERDO, VAMOS TER QUE FAZER ALGUMA COISA PRA NÃO DESENHAR MESAS DISTANTES
 	}
+
+	private void criarEstantes(GLAutoDrawable drawable){
+		GL gl = drawable.getGL();
+		estantes_ = new ArrayList();
+		Estante estante;
+		float x=0f, z=0f;
+
+		final float X_INICIO = -10f;
+		final float Z_INICIO = 10f;
+
+		x = X_INICIO;
+		z = Z_INICIO;
+		
+		gl.glTranslatef(x,0,z);
+		estante = new Estante(drawable,x,z);
+		estantes_.add(estante);
+		gl.glTranslatef(-x,0,-z);
+
+	}
+
+
+
+	/*
+	 *
+	 *	MÉTODOS PARA DESENHAR OS OBJETOS
+	 *
+	 */
+
 	/**
 	 * Percorre o ArrayList e desenha as mesas.
 	 * Para mudar as mesas de lugar altere a função criarMesas.
@@ -173,11 +224,31 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 
 		for(it = mesas_.iterator(); it.hasNext();){
 			mesa = (Mesa) it.next();
-			gl.glTranslatef(mesa.getDelta_x(),0,mesa.getDelta_z());
-			mesa.desenha(drawable);
-			gl.glTranslatef(-mesa.getDelta_x(),0,-mesa.getDelta_z());
+			if(isPerto(mesa.getDelta_x(),mesa.getDelta_z())){
+				gl.glTranslatef(mesa.getDelta_x(),0,mesa.getDelta_z());
+				mesa.desenha(drawable);
+				gl.glTranslatef(-mesa.getDelta_x(),0,-mesa.getDelta_z());
+			}
 		}
 
+	}
+	/**
+	 * Percorre o ArrayList e desenha as estantes.
+	 * Para mudar as estantes de lugar altere a função criarEstantes.
+	 * @param drawable
+	 */
+	private void desenharEstantes(GLAutoDrawable drawable){
+		GL gl = drawable.getGL();
+		Iterator it;	//Iterador
+		Estante estante;//Váriavel temporária que armazenará as estantes
+
+
+		for(it = estantes_.iterator(); it.hasNext();){
+			estante = (Estante) it.next();
+			gl.glTranslatef(estante.getDelta_x(),0,estante.getDelta_z());
+			estante.desenha(drawable);
+			gl.glTranslatef(-estante.getDelta_x(),0,-estante.getDelta_z());
+		}
 	}
 
     private void lighting(GLAutoDrawable drawable) {
@@ -255,6 +326,16 @@ public class BandejaoOpengl extends GLJPanelInteractive{
             return false;
     }
 
+	public boolean isPerto(float x,float z){
+		float x_cam = this.getX_camera();
+		float z_cam = this.getZ_camera();
+
+		if(Math.sqrt(Math.pow(x-x_cam,2)+Math.pow(z-z_cam,2)) <= DISTANCIA_MAXIMA_)
+			return true;
+		else
+			return false;
+	}
+
 	public static void main(String[] args) throws IOException {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -281,7 +362,6 @@ public class BandejaoOpengl extends GLJPanelInteractive{
     private static Catraca catraca;
 	private static Extintor extintor;
     private static MaquinaCartao maquinaCartao;
-	private static ArrayList mesas_;
     private static GradeMaquinaCartao gradeMaquinaCartao;
     private static GradeMaquinaCartao2 gradeMaquinaCartao2;
     private static GradeEntrada gradeEntrada;
@@ -291,6 +371,11 @@ public class BandejaoOpengl extends GLJPanelInteractive{
     private static ParedeEntrada1 paredeEntrada1;
     private static ParedeEntrada2 paredeEntrada2;
     private static float angle = 0;
+
+	private static ArrayList mesas_;
+	private static ArrayList estantes_;
+
+	private static int DISTANCIA_MAXIMA_ = 20;
 
     private float deltaX;
     private float deltaZ;

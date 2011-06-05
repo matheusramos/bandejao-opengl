@@ -36,6 +36,10 @@ public abstract class GLJPanelInteractive extends GLJPanel {
         RotacaoListener rotacaoListener = new RotacaoListener();
         frame.addMouseMotionListener(rotacaoListener);
         frame.addKeyListener(rotacaoListener);
+		//Posicoes iniciais para testar sem ter que fica andando
+
+		//x_camera = -30f;
+		//z_camera = -20f;
     }
 
     public abstract void init(GLAutoDrawable drawable);
@@ -188,7 +192,17 @@ public abstract class GLJPanelInteractive extends GLJPanel {
             throw new UnsupportedOperationException("Not supported yet.");
         }
     }
-    
+
+	public float getX_camera() {
+		return x_camera;
+	}
+
+	public float getZ_camera() {
+		return z_camera;
+	}
+
+
+	
     public float delta;
     public float x_cameraAux = 0.0f;
     public float z_cameraAux = 4.4f;
