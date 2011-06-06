@@ -38,8 +38,8 @@ public abstract class GLJPanelInteractive extends GLJPanel {
         frame.addKeyListener(rotacaoListener);
 		//Posicoes iniciais para testar sem ter que fica andando
 
-		//x_camera = -30f;
-		//z_camera = -20f;
+		x_camera = -35f;
+		z_camera = 5f;
     }
 
     public abstract void init(GLAutoDrawable drawable);
@@ -172,7 +172,7 @@ public abstract class GLJPanelInteractive extends GLJPanel {
             }
             else{
                 x1 = e.getX();
-                angle += 0.01*(x1-x0);
+                angle += 0.03*(x1-x0);
                 x0 = x1;
             }
 
