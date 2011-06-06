@@ -191,7 +191,7 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 			}
 		}while(fileira<5);
 
-		//sexta e sétima fileira
+		//sexta a nona fileira
 		do{
 			fileira++;	//atualiza o numero da fileira atual
 			x = X_FATOR*(fileira*ESPACO_ENTRE_FILEIRAS) + X_INICIO - ESPACO_FILEIRA_PRINCIPAL;
@@ -203,7 +203,7 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 				mesas_.add(mesa);
 				gl.glTranslatef(-x,0,-z);
 			}
-		}while(fileira<7);
+		}while(fileira<9);
 
 		//NAO TERMINEI AINDA, FICOU ABSURDO LERDO, VAMOS TER QUE FAZER ALGUMA COISA PRA NÃO DESENHAR MESAS DISTANTES
 	}
