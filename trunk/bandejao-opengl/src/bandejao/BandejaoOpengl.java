@@ -149,7 +149,7 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 		final float ESPACO_ENTRE_FILEIRAS = 4f;
 		final float ESPACO_FILEIRA_PRINCIPAL = 2f;
 		final float Z_INICIO = 0f;
-		final float X_INICIO = -10f;
+		final float X_INICIO = -13f;
 		final int X_FATOR = -1;
 		final int Z_FATOR = -1;
 		/*-------*/
@@ -375,7 +375,7 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 
 	private static ArrayList mesas_;
 
-	private static int DISTANCIA_MAXIMA_ = 20;
+	private static int DISTANCIA_MAXIMA_ = 18;
 
     private float deltaX;
     private float deltaZ;
