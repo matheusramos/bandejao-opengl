@@ -30,9 +30,9 @@ public abstract class GLJPanelInteractive extends GLJPanel {
     //Adicionamos os eventos do GLListener, teclado, mouse ao GLJPanel
     public GLJPanelInteractive(GLCapabilities glcap,JFrame frame) {
         glcap = null;
-       
+
         addGLEventListener(new GLListener());
-        
+
         RotacaoListener rotacaoListener = new RotacaoListener();
         frame.addMouseMotionListener(rotacaoListener);
         frame.addKeyListener(rotacaoListener);
@@ -95,7 +95,7 @@ public abstract class GLJPanelInteractive extends GLJPanel {
             gl.glLoadIdentity();
 
             //Movimentação da câmera
-            glu.gluLookAt(x_camera, 2.4, z_camera, (raio)*(Math.sin(angle))+(z_camera)*(Math.sin(angle)), y_camera, (-raio)*(Math.cos(angle))+(z_camera)*(Math.cos(angle)),  0, 1, 0);
+            glu.gluLookAt(x_camera, 3.2, z_camera, (raio)*(Math.sin(angle))+(z_camera)*(Math.sin(angle)), y_camera, (-raio)*(Math.cos(angle))+(z_camera)*(Math.cos(angle)),  0, 1, 0);
 
             gl.glGetIntegerv(GL.GL_VIEWPORT, viewport, 0);
             gl.glGetDoublev(GL.GL_MODELVIEW_MATRIX, mvmatrix, 0);
@@ -116,7 +116,7 @@ public abstract class GLJPanelInteractive extends GLJPanel {
             width = w;
             height = h;
 
-            gl.glViewport(0, 0, w, h);            
+            gl.glViewport(0, 0, w, h);
             defineVisualParameters(drawable);
 
             GLJPanelInteractive.this.reshape(drawable, x, y, w, h);
@@ -133,18 +133,18 @@ public abstract class GLJPanelInteractive extends GLJPanel {
         @Override
         public void keyPressed(KeyEvent e) {
             switch (e.getKeyCode()) {
-		case KeyEvent.VK_W://faz zoom-in                    
+		case KeyEvent.VK_W://faz zoom-in
                     z_cameraAux = (float) (z_camera - 0.035 * (Math.cos(angle)));
                     x_cameraAux = (float) (x_camera + 0.035 * (Math.sin(angle)));
-                    
+
                     delta = z_cameraAux - z_camera;
-                    
+
                     conflito = BandejaoOpengl.conflitoModelo(x_cameraAux, z_cameraAux, delta);
 
                     if(!conflito){
                         z_camera -= 0.0315*(Math.cos(angle));
                         x_camera += 0.0315*(Math.sin(angle));
-                        
+
                         repaint();
                     }
                     break;
@@ -153,13 +153,13 @@ public abstract class GLJPanelInteractive extends GLJPanel {
                     x_cameraAux = (float) (x_camera - 0.035 * (Math.sin(angle)));
 
                     delta = z_cameraAux - z_camera;
-                    
+
                     conflito = BandejaoOpengl.conflitoModelo(x_cameraAux, z_cameraAux, delta);
 
                     if(!conflito){
                         z_camera += 0.0315*(Math.cos(angle));
                         x_camera -= 0.0315*(Math.sin(angle));
-                        
+
                         repaint();
                     }
                     break;
@@ -172,7 +172,7 @@ public abstract class GLJPanelInteractive extends GLJPanel {
             }
             else{
                 x1 = e.getX();
-                angle += 0.0085*(x1-x0);
+                angle += 0.01*(x1-x0);
                 x0 = x1;
             }
 
@@ -202,7 +202,7 @@ public abstract class GLJPanelInteractive extends GLJPanel {
 	}
 
 
-	
+
     public float delta;
     public float x_cameraAux = 0.0f;
     public float z_cameraAux = 4.4f;
