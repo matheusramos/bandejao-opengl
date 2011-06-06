@@ -55,7 +55,7 @@ public abstract class GLJPanelInteractive extends GLJPanel {
         gl.glMatrixMode(GL.GL_PROJECTION);
         gl.glLoadIdentity();
 
-        glu.gluPerspective(90.0f, width/height, 0.1, 100.0);
+        glu.gluPerspective(60.0f, width/height, 0.1, 100.0);
     }
 
     public class GLListener implements GLEventListener {
