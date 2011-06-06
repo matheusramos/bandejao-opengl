@@ -1384,28 +1384,6 @@ public class JWavefrontModel {
         GL gl = gLAutoDrawable.getGL();
 
         boolean inside = false;
-        boolean insideCenter = false;
-        boolean inside1;
-        boolean inside2;
-        boolean inside3;
-        boolean inside4;
-        boolean inside5;
-        boolean inside6;
-        boolean inside7;
-        boolean inside8;
-        boolean inside1Center;
-        boolean inside2Center;
-        boolean inside3Center;
-        boolean inside4Center;
-        boolean inside5Center;
-        boolean inside6Center;
-        boolean inside7Center;
-        boolean inside8Center;
-        boolean inside9Center;
-        boolean inside10Center;
-        boolean inside11Center;
-        boolean inside12Center;
-        boolean Center;
 
         FloatBuffer projAux;
         FloatBuffer modlAux;
@@ -1525,39 +1503,34 @@ public class JWavefrontModel {
         frustum[5][1] /= t;
         frustum[5][2] /= t;
         frustum[5][3] /= t;
-
-        inside1 = PointInFrustum(max_x, max_y, max_z, frustum);
-        inside2 = PointInFrustum(max_x, max_y, min_z, frustum);
-        inside3 = PointInFrustum(max_x, min_y, max_z, frustum);
-        inside4 = PointInFrustum(max_x, min_y, min_z, frustum);
-        inside5 = PointInFrustum(min_x, max_y, max_z, frustum);
-        inside6 = PointInFrustum(min_x, max_y, min_z, frustum);
-        inside7 = PointInFrustum(min_x, min_y, max_z, frustum);
-        inside8 = PointInFrustum(min_x, min_y, min_z, frustum);
-        inside1Center = PointInFrustum((max_x+min_x)/2, max_y, max_z, frustum);
-        inside2Center = PointInFrustum((max_x+min_x)/2, max_y, min_z, frustum);
-        inside3Center = PointInFrustum((max_x+min_x)/2, min_y, max_z, frustum);
-        inside4Center = PointInFrustum((max_x+min_x)/2, min_y, min_z, frustum);
-        inside5Center = PointInFrustum(max_x, (max_y+min_y)/2, max_z, frustum);
-        inside6Center = PointInFrustum(max_x, (max_y+min_y)/2, min_z, frustum);
-        inside7Center = PointInFrustum(min_x, (max_y+min_y)/2, max_z, frustum);
-        inside8Center = PointInFrustum(min_x, (max_y+min_y)/2, min_z, frustum);
-        inside9Center = PointInFrustum(max_x, max_y, (max_z+min_z)/2, frustum);
-        inside10Center = PointInFrustum(max_x, min_y, (max_z+min_z)/2, frustum);
-        inside11Center = PointInFrustum(min_x, max_y, (max_z+min_z)/2, frustum);
-        inside12Center = PointInFrustum(min_x, min_y, (max_z+min_z)/2, frustum);
-        Center = PointInFrustum((max_x+min_x)/2, (max_y+min_y)/2, (max_z+min_z)/2, frustum);
-
-        if(inside1 == true || inside2 == true || inside3 == true || inside4 == true || inside5 == true || inside6 == true || inside7 == true || inside8 == true)
-            inside = true;
-
-        if(Center == true || inside1Center == true || inside2Center == true || inside3Center == true || inside4Center == true || inside5Center == true || inside6Center == true || inside7Center == true || inside8Center == true || inside9Center == true || inside10Center == true || inside11Center == true || inside12Center == true)
-            insideCenter = true;
-
-        if(inside == true || insideCenter == true)
-            return true;
-        else
-            return false;     
+        
+        float aux_min_x = min_x;
+        float aux_max_x = max_x;
+        float aux_min_y = min_y;
+        float aux_max_y = max_y;
+        float aux_min_z = min_z;
+        float aux_max_z = max_z;
+        
+        do{
+            do{
+                do{  
+                    inside = PointInFrustum(aux_min_x, aux_min_y, aux_min_z, frustum);
+                    
+                    if(inside == true)
+                        return true;
+                    
+                    aux_min_z += 0.123f;
+                }while(aux_min_z <= aux_max_z);
+                aux_min_z = min_z;
+                
+                aux_min_y += 0.123f;
+            }while(aux_min_y <= aux_max_y);
+            aux_min_y = min_y;
+            
+            aux_min_x += 0.123f;
+        }while(aux_min_x <= aux_max_x);
+        
+        return false;
     }
 
     public boolean conflito(float x_camera, float z_camera){
