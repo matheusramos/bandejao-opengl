@@ -94,7 +94,7 @@ public abstract class GLJPanelInteractive extends GLJPanel {
             gl.glLoadIdentity();
 
             //Movimentação da câmera
-            glu.gluLookAt(x_camera, 2.8, z_camera, (raio)*(Math.sin(angle))+(z_camera)*(Math.sin(angle)), 2.8 + y_camera, (-raio)*(Math.cos(angle))+(z_camera)*(Math.cos(angle)),  0, 1, 0);
+            glu.gluLookAt(x_camera, 2.8 + Math.sin(ang_senoide)*0.15f, z_camera, (raio)*(Math.sin(angle))+(z_camera)*(Math.sin(angle)), 2.8 + y_camera + Math.sin(ang_senoide)*0.15f, (-raio)*(Math.cos(angle))+(z_camera)*(Math.cos(angle)),  0, 1, 0);
 
             gl.glGetIntegerv(GL.GL_VIEWPORT, viewport, 0);
             gl.glGetDoublev(GL.GL_MODELVIEW_MATRIX, mvmatrix, 0);
@@ -150,7 +150,9 @@ public abstract class GLJPanelInteractive extends GLJPanel {
 
                         repaint();
                     }
+                    ang_senoide += 0.22f;
                     break;
+
 		case KeyEvent.VK_S://faz zoom-out
                     z_cameraAux = (float) (z_camera + 0.035 * (Math.cos(angle)));
                     x_cameraAux = (float) (x_camera - 0.035 * (Math.sin(angle)));
@@ -165,6 +167,8 @@ public abstract class GLJPanelInteractive extends GLJPanel {
 
                         repaint();
                     }
+                    ang_senoide -= 0.22f;
+
                     break;
                 case KeyEvent.VK_ESCAPE://faz zoom-out
                     System.exit(1);
@@ -242,4 +246,6 @@ public abstract class GLJPanelInteractive extends GLJPanel {
 
     private float acumulador_x = 0.0f;
     private float acumulador_y = 0.0f;
+
+    private float ang_senoide = 0.0f;
 }

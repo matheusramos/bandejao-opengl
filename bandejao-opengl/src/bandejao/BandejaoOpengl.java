@@ -21,36 +21,37 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 	}
 
     public void init(GLAutoDrawable drawable) {
-		//OpenGl Parâmetros: Mudaremos
+		//OpenGl Parâmetros
         GL gl = drawable.getGL();
         gl.glEnable(GL.GL_DEPTH_TEST);
-                
-		//Compila todos os modelos da cena
-		criarMesas(drawable);
-		//criarEstantes(drawable);
-		
-		catraca = new Catraca(drawable);
-		estante1 = new Estante1(drawable);
-		extintor = new Extintor(drawable);
+
+        //Compila todos os modelos da cena
+        catraca = new Catraca(drawable);
+        maquinaCartao = new MaquinaCartao(drawable);
         gradeEntrada = new GradeEntrada(drawable);
+        gradeSaida1 = new GradeSaida1(drawable);
+        gradeSaida2 = new GradeSaida2(drawable);
         gradeMaquinaCartao = new GradeMaquinaCartao(drawable);
         gradeMaquinaCartao2 = new GradeMaquinaCartao2(drawable);
-		gradeSaida1 = new GradeSaida1(drawable);
-        gradeSaida2 = new GradeSaida2(drawable);
-		lixeiraPia1 = new LixeiraPia1(drawable);
-        lixeiraPia2 = new LixeiraPia2(drawable);
-		maquinaCartao = new MaquinaCartao(drawable);
-		piso = new Piso(drawable);
         portaFechada = new PortaFechada(drawable);
         portaAberta = new PortaAberta(drawable);
         paredeEntrada1 = new ParedeEntrada1(drawable);
         paredeEntrada2 = new ParedeEntrada2(drawable);
-		pia1 = new Pia1(drawable);
+        pia1 = new Pia1(drawable);
         pia2 = new Pia2(drawable);
+        lixeiraPia1 = new LixeiraPia1(drawable);
+        lixeiraPia2 = new LixeiraPia2(drawable);
+        estante1 = new Estante1(drawable);
+        estante2 = new Estante2(drawable);
 
-		//objetos sem conflito
-		disco1 = new Disco1(drawable);
-		
+        //Objetos que não terão conflito
+
+        disco1 = new Disco1(drawable);
+        disco2 = new Disco2(drawable);
+
+        //Vetor de mesas
+        criarMesas(drawable);
+
         //Devemos colocar lighting em init e em display pois senão a luz iria rotacionar junto com a câmera
         lighting(drawable);
     }
@@ -63,24 +64,10 @@ public class BandejaoOpengl extends GLJPanelInteractive{
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
         //O método lighting também é colocado aqui pois senão a luz iria girar junto com a câmera
-        lighting(drawable);    
+        lighting(drawable);
 
         gl.glMatrixMode(GL.GL_MODELVIEW);
-
-		//Anti aliasing
-//		gl.glEnable(GL.GL_POLYGON_SMOOTH);
-//		//gl.glEnable(GL.GL_LINE_SMOOTH);
-//		gl.glHint(GL.GL_POLYGON_SMOOTH_HINT, GL.GL_NICEST);
-//		gl.glEnable(GL.GL_BLEND);
-//		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-
-
-		//gl.glEnable(GL.GL_MULTISAMPLE);
-		//gl.glPushMatrix();
-		extintor.desenha(drawable);
-		//gl.glPopMatrix();
-
-        piso.desenha(drawable);
+        
         gradeMaquinaCartao.desenha(drawable);
         gradeMaquinaCartao2.desenha(drawable);
         gradeSaida1.desenha(drawable);
@@ -88,21 +75,25 @@ public class BandejaoOpengl extends GLJPanelInteractive{
         lixeiraPia1.desenha(drawable);
         lixeiraPia2.desenha(drawable);
         estante1.desenha(drawable);
-		
+        estante2.desenha(drawable);
 
-		desenharMesas(drawable);
-		//desenharEstantes(drawable);
-        
+		//Vetor de mesas
+        desenharMesas(drawable);
+		
+        //Objetos sem conflito
+        disco1.desenha(drawable);
+        disco2.desenha(drawable);
+
         gl.glTranslatef(0.0f, 1.627f, 0.0f);
+
         maquinaCartao.desenha(drawable);
         gradeEntrada.desenha(drawable);
         portaFechada.desenha(drawable);
         portaAberta.desenha(drawable);
         paredeEntrada1.desenha(drawable);
         paredeEntrada2.desenha(drawable);
-		pia1.desenha(drawable);
+        pia1.desenha(drawable);
         pia2.desenha(drawable);
-
 
         gl.glRotatef(angle, -1.0f, -1.0f, 0.0f);
         catraca.desenha(drawable);
@@ -112,9 +103,13 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 
         gl.glRotatef(-240, -1.0f, -1.0f, 0.0f);
         catraca.desenha(drawable);
-              
-        gl.glFlush(); //execute all commands
 
+        gl.glTranslatef(0.0f, -1.627f, 0.0f);
+        gl.glRotatef(120-angle, -1.0f, -1.0f, 0.0f);
+
+        
+
+        gl.glFlush(); //execute all commands
 
     }
 	
@@ -146,7 +141,7 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 
 		/*Medidas referentes às posições das mesas - Se for mudar, mude somente aqui*/
 		final float ESPACO_ENTRE_MESAS = 3.5f;
-		final float ESPACO_ENTRE_FILEIRAS = 4f;
+		final float ESPACO_ENTRE_FILEIRAS = 3.8f;
 		final float ESPACO_FILEIRA_PRINCIPAL = 2f;
 		final float Z_INICIO = 0f;
 		final float X_INICIO = -13f;
@@ -272,7 +267,7 @@ public class BandejaoOpengl extends GLJPanelInteractive{
         gl.glEnable(GL.GL_LIGHT1);
     }
     
-    public static boolean conflitoModelo(float x_camera, float z_camera, float delta) {
+	public static boolean conflitoModelo(float x_camera, float z_camera, float delta) {
         Mesa mesa;
         for(Iterator it=mesas_.iterator(); it.hasNext();){
             mesa = (Mesa) it.next();
@@ -290,6 +285,12 @@ public class BandejaoOpengl extends GLJPanelInteractive{
         else if(gradeMaquinaCartao2.conflito(x_camera, z_camera))
             return gradeMaquinaCartao2.conflito(x_camera, z_camera);
 
+        else if(gradeSaida1.conflito(x_camera, z_camera))
+            return gradeSaida1.conflito(x_camera, z_camera);
+
+        else if(gradeSaida2.conflito(x_camera, z_camera))
+            return gradeSaida2.conflito(x_camera, z_camera);
+
         else if(portaFechada.conflito(x_camera, z_camera))
             return portaFechada.conflito(x_camera, z_camera);
 
@@ -302,19 +303,35 @@ public class BandejaoOpengl extends GLJPanelInteractive{
         else if(paredeEntrada2.conflito(x_camera, z_camera))
             return paredeEntrada2.conflito(x_camera, z_camera);
 
+        else if(pia1.conflito(x_camera, z_camera))
+            return pia1.conflito(x_camera, z_camera);
+
+        else if(pia2.conflito(x_camera, z_camera))
+            return pia2.conflito(x_camera, z_camera);
+
+        else if(lixeiraPia1.conflito(x_camera, z_camera))
+            return lixeiraPia1.conflito(x_camera, z_camera);
+
+        else if(lixeiraPia2.conflito(x_camera, z_camera))
+            return lixeiraPia2.conflito(x_camera, z_camera);
+
+        else if(estante1.conflito(x_camera, z_camera))
+            return estante1.conflito(x_camera, z_camera);
+
+        else if(estante2.conflito(x_camera, z_camera))
+            return estante2.conflito(x_camera, z_camera);
+
         else if(catraca.conflito(x_camera, z_camera)){
             if(delta <= 0 && angle <= 121)
                 angle += 10;
             else if(delta >= 0 && angle >= -1)
                 angle -= 10;
 
-            System.out.printf("\n%f",angle);
-
             return false;
         }
         else
             return false;
-    }
+	}
 
 	public boolean isPerto(float x,float z){
 		float x_cam = this.getX_camera();
@@ -351,10 +368,11 @@ public class BandejaoOpengl extends GLJPanelInteractive{
     private Piso piso;
     private static Catraca catraca;
 	private static Estante1 estante1;
+	private static Estante2 estante2;
 	private static Extintor extintor;
+	private static GradeEntrada gradeEntrada;
 	private static GradeMaquinaCartao gradeMaquinaCartao;
     private static GradeMaquinaCartao2 gradeMaquinaCartao2;
-    private static GradeEntrada gradeEntrada;
 	private static GradeSaida1 gradeSaida1;
     private static GradeSaida2 gradeSaida2;
 	private static LixeiraPia1 lixeiraPia1;
@@ -369,6 +387,7 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 
 	//Objeto sem conflito
 	private static Disco1 disco1;
+	private static Disco2 disco2;
 
 	
     private static float angle = 0;
