@@ -205,7 +205,7 @@ public abstract class GLJPanelInteractive extends GLJPanel {
         }
 
         public void mouseDragged(MouseEvent e) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            //throw new UnsupportedOperationException("Not supported yet.");
         }
     }
 
