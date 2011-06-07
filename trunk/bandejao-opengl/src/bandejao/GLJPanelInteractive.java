@@ -36,7 +36,6 @@ public abstract class GLJPanelInteractive extends GLJPanel {
         RotacaoListener rotacaoListener = new RotacaoListener();
         frame.addMouseMotionListener(rotacaoListener);
         frame.addKeyListener(rotacaoListener);
-		//Posicoes iniciais para testar sem ter que fica andando
 
 		x_camera = -35f;
 		z_camera = 5f;
@@ -76,7 +75,7 @@ public abstract class GLJPanelInteractive extends GLJPanel {
 
             center.x = dim.width / 2;
             center.y = dim.height / 2;
-            robot.mouseMove(center.x, center.y);
+            mouseCenter();
 
             //Oculta o ponteiro do mouse
             Image cursorImage = Toolkit.getDefaultToolkit().getImage("xparent.gif");
@@ -95,7 +94,7 @@ public abstract class GLJPanelInteractive extends GLJPanel {
             gl.glLoadIdentity();
 
             //Movimentação da câmera
-            glu.gluLookAt(x_camera, 3.2, z_camera, (raio)*(Math.sin(angle))+(z_camera)*(Math.sin(angle)), y_camera, (-raio)*(Math.cos(angle))+(z_camera)*(Math.cos(angle)),  0, 1, 0);
+            glu.gluLookAt(x_camera, 2.8, z_camera, (raio)*(Math.sin(angle))+(z_camera)*(Math.sin(angle)), 2.8 + y_camera, (-raio)*(Math.cos(angle))+(z_camera)*(Math.cos(angle)),  0, 1, 0);
 
             gl.glGetIntegerv(GL.GL_VIEWPORT, viewport, 0);
             gl.glGetDoublev(GL.GL_MODELVIEW_MATRIX, mvmatrix, 0);
@@ -126,6 +125,10 @@ public abstract class GLJPanelInteractive extends GLJPanel {
             GLJPanelInteractive.this.displayChanged(drawable, bln, bln1);
         }
 
+    }
+
+    public void mouseCenter(){
+        robot.mouseMove(center.x, center.y);
     }
 
     //Eventos do mouse e do teclado
@@ -163,6 +166,9 @@ public abstract class GLJPanelInteractive extends GLJPanel {
                         repaint();
                     }
                     break;
+                case KeyEvent.VK_ESCAPE://faz zoom-out
+                    System.exit(1);
+                    break;
             }
         }
 
@@ -172,7 +178,9 @@ public abstract class GLJPanelInteractive extends GLJPanel {
             }
             else{
                 x1 = e.getX();
-                angle += 0.03*(x1-x0);
+
+                acumulador_x += x1-x0;
+                angle += 0.0085*(acumulador_x);
                 x0 = x1;
             }
 
@@ -181,9 +189,13 @@ public abstract class GLJPanelInteractive extends GLJPanel {
             }
             else{
                 y1 = e.getY();
-                y_camera -= 500*(y1-y0);
+
+                acumulador_y += y1-y0;
+                y_camera -= 500*(acumulador_y);
                 y0 = y1;
             }
+
+            mouseCenter();
 
             repaint();
         }
@@ -193,22 +205,26 @@ public abstract class GLJPanelInteractive extends GLJPanel {
         }
     }
 
-	public float getX_camera() {
-		return x_camera;
-	}
+    public float getX_camera() {
+	return x_camera;
+    }
 
-	public float getZ_camera() {
-		return z_camera;
-	}
+    public float getZ_camera() {
+    	return z_camera;
+    }
 
+    public void getClose(){
 
+    }
+
+    public static boolean close = false;
 
     public float delta;
     public float x_cameraAux = 0.0f;
-    public float z_cameraAux = 4.4f;
+    public float z_cameraAux = 8.4f;
     public float x_camera = 0.0f;
     public float y_camera = 0.0f;
-    public float z_camera = 4.4f;
+    public float z_camera = 8.4f;
     public float angle = 0.0f;
     private float raio = 100000;
     private int x0 = -1;
@@ -223,4 +239,7 @@ public abstract class GLJPanelInteractive extends GLJPanel {
     private double mvmatrix[];
     private double projmatrix[];
     private boolean conflito;
+
+    private float acumulador_x = 0.0f;
+    private float acumulador_y = 0.0f;
 }
