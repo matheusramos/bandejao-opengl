@@ -141,7 +141,7 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 
 		/*Medidas referentes às posições das mesas - Se for mudar, mude somente aqui*/
 		final float ESPACO_ENTRE_MESAS = 3.5f;
-		final float ESPACO_ENTRE_FILEIRAS = 3.8f;
+		final float ESPACO_ENTRE_FILEIRAS = 3.7f;
 		final float ESPACO_FILEIRA_PRINCIPAL = 2f;
 		final float Z_INICIO = 0f;
 		final float X_INICIO = -13f;
