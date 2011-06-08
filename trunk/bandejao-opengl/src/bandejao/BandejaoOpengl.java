@@ -16,7 +16,6 @@ import objetos.*;
 
 /**
  * BandejaoOpengl.java <BR>
- * PROCURAR LIVRO DA ISABEL MANSOURR
  */
 public class BandejaoOpengl extends GLJPanelInteractive{
 
@@ -125,12 +124,9 @@ public class BandejaoOpengl extends GLJPanelInteractive{
         catraca.desenha(drawable);
 
         gl.glTranslatef(0.0f, -1.627f, 0.0f);
-        gl.glRotatef(120-angle, -1.0f, -1.0f, 0.0f);
-
-        
+        gl.glRotatef(120-angle, -1.0f, -1.0f, 0.0f);   
 
         gl.glFlush(); //execute all commands
-
     }
 	
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {}
