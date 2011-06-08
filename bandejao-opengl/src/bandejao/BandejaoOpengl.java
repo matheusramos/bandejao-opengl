@@ -52,6 +52,7 @@ public class BandejaoOpengl extends GLJPanelInteractive{
         //Vetor de mesas
 		mesas_ = new ArrayList();
         criarMesas(drawable);
+		criarMesas90(drawable);
 
         //Devemos colocar lighting em init e em display pois senão a luz iria rotacionar junto com a câmera
         lighting(drawable);
@@ -134,19 +135,15 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 	 */
 	private void criarMesas(GLAutoDrawable drawable){
 		GL gl = drawable.getGL();
-		Mesa mesa;
-		int i=0; //contara as mesas
 		int fileira=0; //fileira atual
-		float x=0, z=0;
+		float x=0;
 
 		/*Medidas referentes às posições das mesas - Se for mudar, mude somente aqui*/
-		final float ESPACO_ENTRE_MESAS = 3.5f;
 		float ESPACO_ENTRE_FILEIRAS = 3.6f;
-		final float ESPACO_FILEIRA_PRINCIPAL = ESPACO_ENTRE_FILEIRAS + 1.5f;
 		float Z_INICIO = 0f;
+		final float ESPACO_FILEIRA_PRINCIPAL = ESPACO_ENTRE_FILEIRAS + 1.5f;
 		final float X_INICIO = -13.2f;
 		final int X_FATOR = -1;
-		final int Z_FATOR = -1;
 		/*-------*/
 
 		x = X_INICIO;
@@ -254,8 +251,32 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 	}
 
 	private void criarMesas90(GLAutoDrawable drawable){
+		GL gl = drawable.getGL();
 		Mesa90 mesa90;
+		int i=0; //contara as mesas
+		int fileira=0; //fileira atual
+		float x=0, z=0;
 
+		/*Medidas referentes às posições das mesas - Se for mudar, mude somente aqui*/
+		final float ESPACO_ENTRE_MESAS = 3.5f;
+		float ESPACO_ENTRE_FILEIRAS = 3.6f;
+		float Z_INICIO = 16f;
+		final float X_INICIO = -41f;
+		final int X_FATOR = -1;
+		final int Z_FATOR = -1;
+
+		z = Z_INICIO;
+		do{
+			fileira++;
+			z += Z_FATOR*(ESPACO_ENTRE_FILEIRAS);
+			for(i=0; i<10; i++){
+				x = X_FATOR*(i*ESPACO_ENTRE_MESAS) + X_INICIO;
+				gl.glTranslatef(x,0,z);
+				mesa90 = new Mesa90(drawable,x,z);
+				mesas_.add(mesa90);
+				gl.glTranslatef(-x,0,-z);
+			}
+		}while(fileira<2);
 	}
 
 
@@ -273,11 +294,11 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 	private void desenharMesas(GLAutoDrawable drawable){
 		GL gl = drawable.getGL();
 		Iterator it;	//Iterador
-		Mesa mesa;		//Váriavel temporária que armazenará as mesas
+		ObjetoGenerico mesa;		//Váriavel temporária que armazenará as mesas
 
 
 		for(it = mesas_.iterator(); it.hasNext();){
-			mesa = (Mesa) it.next();
+			mesa = (ObjetoGenerico) it.next();
 			if(isPerto(mesa.getDelta_x(),mesa.getDelta_z())){
 				gl.glTranslatef(mesa.getDelta_x(),0,mesa.getDelta_z());
 				mesa.desenha(drawable);
@@ -320,9 +341,9 @@ public class BandejaoOpengl extends GLJPanelInteractive{
     }
     
 	public static boolean conflitoModelo(float x_camera, float z_camera, float delta) {
-        Mesa mesa;
+        ObjetoGenerico mesa;
         for(Iterator it=mesas_.iterator(); it.hasNext();){
-            mesa = (Mesa) it.next();
+            mesa = (ObjetoGenerico) it.next();
 
             if(mesa.conflito(x_camera, z_camera))
                 return mesa.conflito(x_camera, z_camera);
