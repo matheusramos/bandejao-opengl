@@ -137,18 +137,18 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 		Mesa mesa;
 		int i=0; //contara as mesas
 		int fileira=0; //fileira atual
-		float x=0, z=0;
+		float x=0, z=0, x_cumulativo=0;;
 
 		/*Medidas referentes às posições das mesas - Se for mudar, mude somente aqui*/
 		final float ESPACO_ENTRE_MESAS = 3.5f;
-		float ESPACO_ENTRE_FILEIRAS = 3.5f;
-		final float ESPACO_FILEIRA_PRINCIPAL = 2.4f;
+		float ESPACO_ENTRE_FILEIRAS = 3.6f;
+		final float ESPACO_FILEIRA_PRINCIPAL = ESPACO_ENTRE_FILEIRAS + 1.5f;
 		final float Z_INICIO = 0f;
-		final float X_INICIO = -13f;
+		final float X_INICIO = -13.2f;
 		final int X_FATOR = -1;
 		final int Z_FATOR = -1;
 		/*-------*/
-		
+
 		x = X_INICIO;
 
 		//Primeira Fileira
@@ -161,7 +161,7 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 		}
 
 		fileira++;	//atualiza o numero da fileira atual
-		x = X_FATOR*(fileira*ESPACO_ENTRE_FILEIRAS) + X_INICIO;
+		x += X_FATOR*(fileira*ESPACO_ENTRE_FILEIRAS);
 		
 		//Segunda Fileira
 		for(i=0;i<6;i++){
@@ -175,7 +175,7 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 		//Terceira Fileira até a quinta
 		do{
 			fileira++;	//atualiza o numero da fileira atual
-			x = X_FATOR*(fileira*ESPACO_ENTRE_FILEIRAS) + X_INICIO;
+			x += X_FATOR*(ESPACO_ENTRE_FILEIRAS);
 
 			for(i=0;i<8;i++){
 				z = Z_FATOR*(i*ESPACO_ENTRE_MESAS) + Z_INICIO;
@@ -187,26 +187,37 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 		}while(fileira<5);
 
 		//CORREDOR PRINCIPAL AQUI!!!!
+
 		//sexta fileira
+			fileira++;	//atualiza o numero da fileira atual
+			x += X_FATOR*(ESPACO_FILEIRA_PRINCIPAL);
+			for(i=0;i<8;i++){
+				z = Z_FATOR*(i*ESPACO_ENTRE_MESAS) + Z_INICIO;
+				gl.glTranslatef(x,0,z);
+				mesa = new Mesa(drawable,x,z);
+				mesas_.add(mesa);
+				gl.glTranslatef(-x,0,-z);
+			}
+
+		//PILAR
+		//Sétima fileira
+		ESPACO_ENTRE_FILEIRAS = 3.5f;	//Muda o espaço entre fileiras
 		fileira++;	//atualiza o numero da fileira atual
-		x = X_FATOR*(fileira*ESPACO_ENTRE_FILEIRAS) + X_INICIO - ESPACO_FILEIRA_PRINCIPAL;
+			x += X_FATOR*(ESPACO_ENTRE_FILEIRAS);
+			for(i=0;i<8;i++){
+				z = Z_FATOR*(i*ESPACO_ENTRE_MESAS) + Z_INICIO;
+				gl.glTranslatef(x,0,z);
+				mesa = new Mesa(drawable,x,z);
+				mesas_.add(mesa);
+				gl.glTranslatef(-x,0,-z);
+			}
 
-		for(i=0;i<8;i++){
-			z = Z_FATOR*(i*ESPACO_ENTRE_MESAS) + Z_INICIO;
-			gl.glTranslatef(x,0,z);
-			mesa = new Mesa(drawable,x,z);
-			mesas_.add(mesa);
-			gl.glTranslatef(-x,0,-z);
-		}
+		ESPACO_ENTRE_FILEIRAS = 4.5f;	//Muda o espaço entre fileiras
 
-		ESPACO_ENTRE_FILEIRAS = 4.5f;	//Muda o espaç entre fileiras
-
-		//FAZER UMA SOMA CUMULATIVA, ACHO QUE FICARÁ MAIS RAPIDO
-
-		//setima a nona fileira
+		//oitava a nona fileira
 		do{
 			fileira++;	//atualiza o numero da fileira atual
-			x = X_FATOR*(fileira*ESPACO_ENTRE_FILEIRAS) + X_INICIO - ESPACO_FILEIRA_PRINCIPAL;
+			x += X_FATOR*(ESPACO_ENTRE_FILEIRAS);
 
 			for(i=0;i<8;i++){
 				z = Z_FATOR*(i*ESPACO_ENTRE_MESAS) + Z_INICIO;
@@ -216,6 +227,8 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 				gl.glTranslatef(-x,0,-z);
 			}
 		}while(fileira<9);
+
+		ESPACO_ENTRE_FILEIRAS = 4.5f;	//Muda o espaço entre fileiras
 
 		//NAO TERMINEI AINDA, FICOU ABSURDO LERDO, VAMOS TER QUE FAZER ALGUMA COISA PRA NÃO DESENHAR MESAS DISTANTES
 	}
