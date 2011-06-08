@@ -94,7 +94,7 @@ public abstract class GLJPanelInteractive extends GLJPanel {
             gl.glLoadIdentity();
 
             //Movimentação da câmera
-            glu.gluLookAt(x_camera, 2.8 + Math.sin(ang_senoide)*0.06f, z_camera, (raio)*(Math.sin(angle))+(z_camera)*(Math.sin(angle)), 2.8 + y_camera + Math.sin(ang_senoide)*0.06f, (-raio)*(Math.cos(angle))+(z_camera)*(Math.cos(angle)),  0, 1, 0);
+            glu.gluLookAt(x_camera, 2.8f + Math.sin(ang_senoide)*0.06f, z_camera, (raio)*(Math.sin(angle))+(z_camera)*(Math.sin(angle)), 2.8 + y_camera + Math.sin(ang_senoide)*0.06f, (-raio)*(Math.cos(angle))+(z_camera)*(Math.cos(angle)),  0, 1, 0);
 
             gl.glGetIntegerv(GL.GL_VIEWPORT, viewport, 0);
             gl.glGetDoublev(GL.GL_MODELVIEW_MATRIX, mvmatrix, 0);

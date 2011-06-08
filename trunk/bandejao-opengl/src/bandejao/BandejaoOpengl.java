@@ -1,6 +1,11 @@
 package bandejao;
 
+import com.sun.opengl.util.texture.Texture;
+import com.sun.opengl.util.texture.TextureData;
+import com.sun.opengl.util.texture.TextureIO;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import javax.media.opengl.GL;
@@ -51,9 +56,20 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 
         //Vetor de mesas
 		mesas_ = new ArrayList();
-        criarMesas(drawable);
+		criarMesas(drawable);
 		criarMesas90(drawable);
 
+		//Carregando textura
+        try {
+            InputStream stream = getClass().getResourceAsStream("Piso.png");
+            TextureData data = TextureIO.newTextureData(stream, false, "png");
+            paredeTexture = TextureIO.newTexture(data);
+        }
+        catch (IOException exc) {
+            exc.printStackTrace();
+            System.exit(1);
+        }
+		
         //Devemos colocar lighting em init e em display pois senão a luz iria rotacionar junto com a câmera
         lighting(drawable);
     }
@@ -79,6 +95,8 @@ public class BandejaoOpengl extends GLJPanelInteractive{
         estante1.desenha(drawable);
         estante2.desenha(drawable);
 
+		//Metodo que ira desenhar todo o piso
+        desenhaPiso(drawable);
 		//Vetor de mesas
         desenharMesas(drawable);
 		
@@ -115,10 +133,8 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 
     }
 	
-	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {   
-    }
-	public void displayChanged(GLAutoDrawable drawable, boolean modeChanged, boolean deviceChanged) {
-    }
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {}
+	public void displayChanged(GLAutoDrawable drawable, boolean modeChanged, boolean deviceChanged) {}
 
 	/*
 	 *
@@ -308,26 +324,79 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 
 	}
 
+	    /*
+	 *
+	 *	MÉTODOS PARA DESENHAR O PISO
+	 *
+	 */
 
-    private void lighting(GLAutoDrawable drawable) {
+	/**
+	 * Percorre dois loops para desenhar todos os quadrados do piso.
+	 * @param drawable
+	 */
+	public void desenhaPiso(GLAutoDrawable drawable){
+		GL gl = drawable.getGL();
+		float coord_x = 4.0f;
+		float coord_z = 11.0f;
+
+		surface_emission[0] = 1.0f;
+		surface_emission[1] = 1.0f;
+		surface_emission[2] = 1.0f;
+		gl.glMaterialfv(GL.GL_FRONT, GL.GL_EMISSION, surface_emission, 0);
+
+		paredeTexture.enable();
+		paredeTexture.bind();
+
+		do{
+			coord_x = 4.0f;
+			do{
+				gl.glBegin(GL.GL_QUADS);
+
+				gl.glTexCoord2f(1.0f, 0.0f);
+				gl.glVertex3f(coord_x, 0.0f, coord_z);
+
+				gl.glTexCoord2f(1.0f, 1.0f);
+				gl.glVertex3f(coord_x, 0.0f, (coord_z - 2.0f));
+
+				gl.glTexCoord2f(0.0f, 1.0f);
+				gl.glVertex3f((coord_x - 2.0f), 0.0f, (coord_z - 2.0f));
+
+				gl.glTexCoord2f(0.0f, 0.0f);
+				gl.glVertex3f((coord_x - 2.0f), 0.0f, coord_z);
+
+				gl.glEnd();
+
+				coord_x -= 2.0f;
+			}while(coord_x >= -90.0f);
+			coord_z -= 2.0f;
+		}while(coord_z >= -30.0f);
+
+		surface_emission[0] = 0.0f;
+		surface_emission[1] = 0.0f;
+		surface_emission[2] = 0.0f;
+		surface_emission[3] = 1.0f;
+		gl.glMaterialfv(GL.GL_FRONT, GL.GL_EMISSION, surface_emission, 0);
+	}
+
+	private void lighting(GLAutoDrawable drawable) {
         GL gl = drawable.getGL();
 
         //Não foi preciso colocar a luz ambiente pois nossos modelos já possuem cor,
         //a luz difusa define qual a cor e a intensidade que será refletida pelos modelos, variando de 0 a 1,
         //a luz especular define a intensidade e a cor com que a fonte de luz será refletida nos objetos, e essa reflexão será
-        //    observada de acordo com a posição da luz,
+        //observada de acordo com a posição da luz,
         //e na posição da luz, como queremos projetar os raios de luz do sol na cena, o quarto parâmetro será zero; e os 3 primeiros parâmetros definem
-        //    onde a luz será posicionada, sendo que a direção e o sentido da luz sempre será para o ponto da origem (0,0,0).
+        //onde a luz será posicionada, sendo que a direção e o sentido da luz sempre será para o ponto da origem (0,0,0).
 
         float[] luzDifusa = new float[]{1.0f, 1.0f, 1.0f, 1.0f};
-        float[] luzEspecular = new float[]{0.4f, 0.4f, 0.4f, 1.0f};
-        float[] posicaoLuz = new float[]{50.0f, 20.0f, 100.0f, 0.0f};
-        float[] posicaoLuz2 = new float[]{-50.0f, 10.0f, -100.0f, 0.0f};
+        float[] luzEspecular = new float[]{0.2f, 0.2f, 0.2f, 1.0f};
+        float[] posicaoLuz = new float[]{-50.0f, 20.0f, -30.0f, 0.0f};
+        float[] posicaoLuz2 = new float[]{20.0f, 20.0f, 30.0f, 0.0f};
 
         gl.glLightfv(GL.GL_LIGHT0, GL.GL_DIFFUSE, luzDifusa, 0);
         gl.glLightfv(GL.GL_LIGHT0, GL.GL_SPECULAR, luzEspecular, 0);
         gl.glLightfv(GL.GL_LIGHT0, GL.GL_POSITION, posicaoLuz, 0);
-        
+
         gl.glLightfv(GL.GL_LIGHT1, GL.GL_DIFFUSE, luzDifusa, 0);
         gl.glLightfv(GL.GL_LIGHT1, GL.GL_SPECULAR, luzEspecular, 0);
         gl.glLightfv(GL.GL_LIGHT1, GL.GL_POSITION, posicaoLuz2, 0);
@@ -335,11 +404,14 @@ public class BandejaoOpengl extends GLJPanelInteractive{
         //Define que os dois lados de um plano serão iluminados
         gl.glLightModeli(GL.GL_LIGHT_MODEL_TWO_SIDE, GL.GL_TRUE);
 
+        //float surface_emission[] = {1.25f, 1.25f, 1.25f, 1.0f};
+        //gl.glMaterialfv(GL.GL_FRONT, GL.GL_EMISSION, surface_emission, 0);
+
         gl.glEnable(GL.GL_LIGHTING);
         gl.glEnable(GL.GL_LIGHT0);
         gl.glEnable(GL.GL_LIGHT1);
     }
-    
+	
 	public static boolean conflitoModelo(float x_camera, float z_camera, float delta) {
         ObjetoGenerico mesa;
         for(Iterator it=mesas_.iterator(); it.hasNext();){
@@ -438,7 +510,6 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 /*
  * Váriavei de Classe -> Terminação com o caractere "_"
  */
-    private Piso piso;
     private static Catraca catraca;
 	private static Estante1 estante1;
 	private static Estante2 estante2;
@@ -463,13 +534,18 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 	private static Disco2 disco2;
 
 	
+    //Vetor de mesas e atributos
+    private static ArrayList mesas_;
+    private static int DISTANCIA_MAXIMA_ = 20;
+
+    //Variavel que armazena a textura
+     private Texture paredeTexture;
+
+    //Angulo da catraca
     private static float angle = 0;
 
-	private static ArrayList mesas_;
+    //Luz emitida pelo piso
+    float surface_emission[] = {1.0f, 1.0f, 1.0f, 1.0f};
 
-	private static int DISTANCIA_MAXIMA_ = 18;
-
-    private float deltaX;
-    private float deltaZ;
 }
 
