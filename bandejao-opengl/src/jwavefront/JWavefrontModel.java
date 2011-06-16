@@ -45,7 +45,7 @@ public class JWavefrontModel {
      * render with materials
      */
     public static final int WF_MATERIAL = (1 << 4);
-    
+
     /**
      * Construct a JWavefrontModel object.
      * @param file The file containing the object.
@@ -66,7 +66,7 @@ public class JWavefrontModel {
 
         float cx, cy, cz, w, h, d;
         float scale;
-      
+
 
         /* calculate model width, height, and depth */
         w = Math.abs(max_x) + Math.abs(min_x);
@@ -102,7 +102,7 @@ public class JWavefrontModel {
         assert (vertices != null);
         float dimensions[] = new float[3];
 
-        /* get the max/mins */      
+        /* get the max/mins */
 
         /* calculate model width, height, and depth */
         dimensions[0] = Math.abs(max_x) + Math.abs(min_x);
@@ -505,7 +505,7 @@ public class JWavefrontModel {
     }
 
     /**
-     * Second pass at a Wavefront OBJ file that gets all the data. 
+     * Second pass at a Wavefront OBJ file that gets all the data.
      * @param file The file containing the Wavefront model.
      * @throws IOException
      */
@@ -971,7 +971,7 @@ public class JWavefrontModel {
     }
 
     /**
-     * Read a wavefront material library file. 
+     * Read a wavefront material library file.
      * @param name The filename of the material file
      * @throws IOException
      */
@@ -1197,7 +1197,7 @@ public class JWavefrontModel {
      *            WF_TEXTURE -  write texture coords
      *            WF_FLAT and WF_SMOOTH should not both be specified.
      */
-    private void draw(GLAutoDrawable gLAutoDrawable, int mode) {      
+    private void draw(GLAutoDrawable gLAutoDrawable, int mode) {
         GL gl = gLAutoDrawable.getGL();
 
         assert (vertices != null);
@@ -1347,10 +1347,10 @@ public class JWavefrontModel {
 
             group = group.next;
         }
-        
+
         maximos();
     }
-    
+
     public void maximos(){
         max_x = min_x = vertices[3 + 0];
         max_y = min_y = vertices[3 + 1];
@@ -1380,7 +1380,7 @@ public class JWavefrontModel {
         }
     }
 
-    public boolean inside(GLAutoDrawable gLAutoDrawable){       
+    public boolean inside(GLAutoDrawable gLAutoDrawable){
         GL gl = gLAutoDrawable.getGL();
 
         boolean inside = false;
@@ -1503,43 +1503,179 @@ public class JWavefrontModel {
         frustum[5][1] /= t;
         frustum[5][2] /= t;
         frustum[5][3] /= t;
-        
+
         float aux_min_x = min_x;
         float aux_max_x = max_x;
         float aux_min_y = min_y;
         float aux_max_y = max_y;
         float aux_min_z = min_z;
         float aux_max_z = max_z;
-        
+
         do{
             do{
-                do{  
+                do{
                     inside = PointInFrustum(aux_min_x, aux_min_y, aux_min_z, frustum);
-                    
+
                     if(inside == true)
                         return true;
-                    
+
                     aux_min_z += 0.123f;
                 }while(aux_min_z <= aux_max_z);
                 aux_min_z = min_z;
-                
+
                 aux_min_y += 0.123f;
             }while(aux_min_y <= aux_max_y);
             aux_min_y = min_y;
-            
+
             aux_min_x += 0.123f;
         }while(aux_min_x <= aux_max_x);
-        
+
+        return false;
+    }
+
+    public boolean insideMesa(GLAutoDrawable gLAutoDrawable){
+        GL gl = gLAutoDrawable.getGL();
+
+        boolean inside = false;
+
+        FloatBuffer projAux;
+        FloatBuffer modlAux;
+        float [] proj = new float[16];
+        float [] modl = new float[16];
+        float [] clip = new float[16];
+
+        float [][] frustum = new float[6][4];
+        float t;
+
+        projAux = FloatBuffer.allocate(16);
+        modlAux = FloatBuffer.allocate(16);
+
+        /* Get the current PROJECTION matrix from OpenGL */
+        gl.glGetFloatv(GL.GL_PROJECTION_MATRIX, projAux);
+        proj = projAux.array();
+
+        /* Get the current MODELVIEW matrix from OpenGL */
+        gl.glGetFloatv(GL.GL_MODELVIEW_MATRIX, modlAux);
+        modl = modlAux.array();
+
+        /* Combine the two matrices (multiply projection by modelview) */
+        clip[ 0] = modl[ 0] * proj[ 0] + modl[ 1] * proj[ 4] + modl[ 2] * proj[ 8] + modl[ 3] * proj[12];
+        clip[ 1] = modl[ 0] * proj[ 1] + modl[ 1] * proj[ 5] + modl[ 2] * proj[ 9] + modl[ 3] * proj[13];
+        clip[ 2] = modl[ 0] * proj[ 2] + modl[ 1] * proj[ 6] + modl[ 2] * proj[10] + modl[ 3] * proj[14];
+        clip[ 3] = modl[ 0] * proj[ 3] + modl[ 1] * proj[ 7] + modl[ 2] * proj[11] + modl[ 3] * proj[15];
+
+        clip[ 4] = modl[ 4] * proj[ 0] + modl[ 5] * proj[ 4] + modl[ 6] * proj[ 8] + modl[ 7] * proj[12];
+        clip[ 5] = modl[ 4] * proj[ 1] + modl[ 5] * proj[ 5] + modl[ 6] * proj[ 9] + modl[ 7] * proj[13];
+        clip[ 6] = modl[ 4] * proj[ 2] + modl[ 5] * proj[ 6] + modl[ 6] * proj[10] + modl[ 7] * proj[14];
+        clip[ 7] = modl[ 4] * proj[ 3] + modl[ 5] * proj[ 7] + modl[ 6] * proj[11] + modl[ 7] * proj[15];
+
+        clip[ 8] = modl[ 8] * proj[ 0] + modl[ 9] * proj[ 4] + modl[10] * proj[ 8] + modl[11] * proj[12];
+        clip[ 9] = modl[ 8] * proj[ 1] + modl[ 9] * proj[ 5] + modl[10] * proj[ 9] + modl[11] * proj[13];
+        clip[10] = modl[ 8] * proj[ 2] + modl[ 9] * proj[ 6] + modl[10] * proj[10] + modl[11] * proj[14];
+        clip[11] = modl[ 8] * proj[ 3] + modl[ 9] * proj[ 7] + modl[10] * proj[11] + modl[11] * proj[15];
+
+        clip[12] = modl[12] * proj[ 0] + modl[13] * proj[ 4] + modl[14] * proj[ 8] + modl[15] * proj[12];
+        clip[13] = modl[12] * proj[ 1] + modl[13] * proj[ 5] + modl[14] * proj[ 9] + modl[15] * proj[13];
+        clip[14] = modl[12] * proj[ 2] + modl[13] * proj[ 6] + modl[14] * proj[10] + modl[15] * proj[14];
+        clip[15] = modl[12] * proj[ 3] + modl[13] * proj[ 7] + modl[14] * proj[11] + modl[15] * proj[15];
+
+        /* Extract the numbers for the RIGHT plane */
+        frustum[0][0] = clip[ 3] - clip[ 0];
+        frustum[0][1] = clip[ 7] - clip[ 4];
+        frustum[0][2] = clip[11] - clip[ 8];
+        frustum[0][3] = clip[15] - clip[12];
+
+        /* Normalize the result */
+        t =  (float) Math.sqrt( frustum[0][0] * frustum[0][0] + frustum[0][1] * frustum[0][1] + frustum[0][2] * frustum[0][2] );
+        frustum[0][0] /= t;
+        frustum[0][1] /= t;
+        frustum[0][2] /= t;
+        frustum[0][3] /= t;
+
+        /* Extract the numbers for the LEFT plane */
+        frustum[1][0] = clip[ 3] + clip[ 0];
+        frustum[1][1] = clip[ 7] + clip[ 4];
+        frustum[1][2] = clip[11] + clip[ 8];
+        frustum[1][3] = clip[15] + clip[12];
+
+        /* Normalize the result */
+        t = (float) Math.sqrt( frustum[1][0] * frustum[1][0] + frustum[1][1] * frustum[1][1] + frustum[1][2] * frustum[1][2] );
+        frustum[1][0] /= t;
+        frustum[1][1] /= t;
+        frustum[1][2] /= t;
+        frustum[1][3] /= t;
+
+        /* Extract the BOTTOM plane */
+        frustum[2][0] = clip[ 3] + clip[ 1];
+        frustum[2][1] = clip[ 7] + clip[ 5];
+        frustum[2][2] = clip[11] + clip[ 9];
+        frustum[2][3] = clip[15] + clip[13];
+
+        /* Normalize the result */
+        t = (float) Math.sqrt( frustum[2][0] * frustum[2][0] + frustum[2][1] * frustum[2][1] + frustum[2][2] * frustum[2][2] );
+        frustum[2][0] /= t;
+        frustum[2][1] /= t;
+        frustum[2][2] /= t;
+        frustum[2][3] /= t;
+
+        /* Extract the TOP plane */
+        frustum[3][0] = clip[ 3] - clip[ 1];
+        frustum[3][1] = clip[ 7] - clip[ 5];
+        frustum[3][2] = clip[11] - clip[ 9];
+        frustum[3][3] = clip[15] - clip[13];
+
+        /* Normalize the result */
+        t = (float) Math.sqrt( frustum[3][0] * frustum[3][0] + frustum[3][1] * frustum[3][1] + frustum[3][2] * frustum[3][2] );
+        frustum[3][0] /= t;
+        frustum[3][1] /= t;
+        frustum[3][2] /= t;
+        frustum[3][3] /= t;
+
+        /* Extract the FAR plane */
+        frustum[4][0] = clip[ 3] - clip[ 2];
+        frustum[4][1] = clip[ 7] - clip[ 6];
+        frustum[4][2] = clip[11] - clip[10];
+        frustum[4][3] = clip[15] - clip[14];
+
+        /* Normalize the result */
+        t = (float) Math.sqrt( frustum[4][0] * frustum[4][0] + frustum[4][1] * frustum[4][1] + frustum[4][2] * frustum[4][2] );
+        frustum[4][0] /= t;
+        frustum[4][1] /= t;
+        frustum[4][2] /= t;
+        frustum[4][3] /= t;
+
+        /* Extract the NEAR plane */
+        frustum[5][0] = clip[ 3] + clip[ 2];
+        frustum[5][1] = clip[ 7] + clip[ 6];
+        frustum[5][2] = clip[11] + clip[10];
+        frustum[5][3] = clip[15] + clip[14];
+
+        /* Normalize the result */
+        t = (float) Math.sqrt( frustum[5][0] * frustum[5][0] + frustum[5][1] * frustum[5][1] + frustum[5][2] * frustum[5][2] );
+        frustum[5][0] /= t;
+        frustum[5][1] /= t;
+        frustum[5][2] /= t;
+        frustum[5][3] /= t;
+
+        if(PointInFrustum(min_x, min_y, min_z, frustum)) return true;
+        if(PointInFrustum(min_x, min_y, max_z, frustum)) return true;
+        if(PointInFrustum(min_x, max_y, min_z, frustum)) return true;
+        if(PointInFrustum(min_x, max_y, max_z, frustum)) return true;
+        if(PointInFrustum(max_x, min_y, min_z, frustum)) return true;
+        if(PointInFrustum(max_x, min_y, max_z, frustum)) return true;
+        if(PointInFrustum(max_x, max_y, min_z, frustum)) return true;
+        if(PointInFrustum(max_x, max_y, max_z, frustum)) return true;
+
         return false;
     }
 
     public boolean conflito(float x_camera, float z_camera){
         boolean conflitoModelo = false;
-        float minx, maxx;      
-        float minz, maxz;      
+        float minx, maxx;
+        float minz, maxz;
 
         minx = min_x - 0.15f;
-        maxx = max_x + 0.15f;       
+        maxx = max_x + 0.15f;
         minz = min_z - 0.15f;
         maxz = max_z + 0.15f;
 
@@ -1548,7 +1684,7 @@ public class JWavefrontModel {
 
         return conflitoModelo;
     }
-    
+
     /**
      * Method used to draw an object. The method compile() should be previously
      * called to create the disply list.
@@ -1830,10 +1966,10 @@ public class JWavefrontModel {
      * Position of the model
      */
     protected float position[];
-    
+
     protected float delta_X = 0.0f;
     protected float delta_Z = 0.0f;
-    
+
     protected float min_x, max_x;
     protected float min_y, max_y;
     protected float min_z, max_z;
