@@ -145,8 +145,8 @@ public abstract class GLJPanelInteractive extends GLJPanel {
                     conflito = BandejaoOpengl.conflitoModelo(x_cameraAux, z_cameraAux, delta);
 
                     if(!conflito){
-                        z_camera -= 0.0315*(Math.cos(angle));
-                        x_camera += 0.0315*(Math.sin(angle));
+                        z_camera -= 3*0.0315*(Math.cos(angle));//0.0315
+                        x_camera += 3*0.0315*(Math.sin(angle));
 
                         repaint();
                     }
@@ -205,7 +205,7 @@ public abstract class GLJPanelInteractive extends GLJPanel {
         }
 
         public void mouseDragged(MouseEvent e) {
-            //throw new UnsupportedOperationException("Not supported yet.");
+            throw new UnsupportedOperationException("Not supported yet.");
         }
     }
 

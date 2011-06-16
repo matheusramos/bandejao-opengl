@@ -52,11 +52,20 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 
         disco1 = new Disco1(drawable);
         disco2 = new Disco2(drawable);
+		teto = new Teto(drawable);
 
+        //Paredes
+        paredeBandeja = new ParedeBandeja(drawable);
+        paredeSol = new ParedeSol(drawable);
+        paredeCefer = new ParedeCefer(drawable);
+		
         //Vetor de mesas
 		mesas_ = new ArrayList();
+		pilares_ = new ArrayList();
 		criarMesas(drawable);
 		criarMesas90(drawable);
+		criarPilares(drawable);
+
 
 		//Carregando textura
         try {
@@ -96,12 +105,20 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 
 		//Metodo que ira desenhar todo o piso
         desenhaPiso(drawable);
+
 		//Vetor de mesas
         desenharMesas(drawable);
-		
+		desenharPilares(drawable);
+
+		//Paredes
+        paredeBandeja.desenhaParede(drawable);
+        paredeSol.desenhaParede(drawable);
+        paredeCefer.desenhaParede(drawable);
+
         //Objetos sem conflito
         disco1.desenha(drawable);
         disco2.desenha(drawable);
+		teto.desenhaParede(drawable);
 
         gl.glTranslatef(0.0f, 1.627f, 0.0f);
 
@@ -122,9 +139,6 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 
         gl.glRotatef(-240, -1.0f, -1.0f, 0.0f);
         catraca.desenha(drawable);
-
-        gl.glTranslatef(0.0f, -1.627f, 0.0f);
-        gl.glRotatef(120-angle, -1.0f, -1.0f, 0.0f);   
 
         gl.glFlush(); //execute all commands
     }
@@ -291,7 +305,31 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 		}while(fileira<2);
 	}
 
+	private void criarPilares(GLAutoDrawable drawable){
+		GL gl = drawable.getGL();
+		PilarCamera pilar;
+		float x=-22.2f,z=-9;
 
+		gl.glTranslatef(x,0,z);
+		pilar = new PilarCamera(drawable,x,z);
+		gl.glTranslatef(-x,0,-z);
+		pilares_.add(pilar);
+
+		z = -23;
+
+		gl.glTranslatef(x,0,z);
+		pilar = new PilarCamera(drawable,x,z);
+		gl.glTranslatef(-x,0,-z);
+		pilares_.add(pilar);
+
+		x = -38;
+
+		gl.glTranslatef(x,0,z);
+		pilar = new PilarCamera(drawable,x,z);
+		gl.glTranslatef(-x,0,-z);
+		pilares_.add(pilar);
+
+	}
 	/*
 	 *
 	 *	MÉTODOS PARA DESENHAR OS OBJETOS
@@ -330,48 +368,76 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 	 * Percorre dois loops para desenhar todos os quadrados do piso.
 	 * @param drawable
 	 */
-	public void desenhaPiso(GLAutoDrawable drawable){
+	/**
+	 * Percorre dois loops para desenhar todos os quadrados do piso.
+	 * @param drawable
+	 */
+        public void desenhaPiso(GLAutoDrawable drawable){
+            GL gl = drawable.getGL();
+            float coord_x = 4.0f;
+            float coord_z = 16.0f;
+
+            surface_emission[0] = 1.0f;
+            surface_emission[1] = 1.0f;
+            surface_emission[2] = 1.0f;
+            gl.glMaterialfv(GL.GL_FRONT, GL.GL_EMISSION, surface_emission, 0);
+
+            paredeTexture.enable();
+            paredeTexture.bind();
+
+            do {
+                coord_x = 4.0f;
+
+                do {
+                    gl.glBegin(GL.GL_QUADS);
+
+                    gl.glTexCoord2f(1.0f, 0.0f);
+                    gl.glVertex3f(coord_x, 0.0f, coord_z);
+
+                    gl.glTexCoord2f(1.0f, 1.0f);
+                    gl.glVertex3f(coord_x, 0.0f, (coord_z - 5.0f));
+
+                    gl.glTexCoord2f(0.0f, 1.0f);
+                    gl.glVertex3f((coord_x - 5.0f), 0.0f, (coord_z - 5.0f));
+
+                    gl.glTexCoord2f(0.0f, 0.0f);
+                    gl.glVertex3f((coord_x - 5.0f), 0.0f, coord_z);
+
+                    gl.glEnd();
+
+                    coord_x -= 5.0f;
+                } while(coord_x >= -74.0f);
+
+                coord_z -= 5.0f;
+            } while(coord_z >= -30.0f);
+
+            surface_emission[0] = 0.0f;
+            surface_emission[1] = 0.0f;
+            surface_emission[2] = 0.0f;
+            surface_emission[3] = 1.0f;
+            gl.glMaterialfv(GL.GL_FRONT, GL.GL_EMISSION, surface_emission, 0);
+        }
+
+	private void desenharPilares(GLAutoDrawable drawable){
 		GL gl = drawable.getGL();
-		float coord_x = 4.0f;
-		float coord_z = 11.0f;
+		PilarCamera pilar;
 
-		surface_emission[0] = 1.0f;
-		surface_emission[1] = 1.0f;
-		surface_emission[2] = 1.0f;
-		gl.glMaterialfv(GL.GL_FRONT, GL.GL_EMISSION, surface_emission, 0);
+		for(Iterator it=pilares_.iterator();it.hasNext();){
+			pilar = (PilarCamera) it.next();
+			gl.glTranslatef(pilar.getDelta_x(),0,pilar.getDelta_z());
+			pilar.desenha(drawable);
+			gl.glTranslatef(-pilar.getDelta_x(),0,-pilar.getDelta_z());
+		}
+	}
 
-		paredeTexture.enable();
-		paredeTexture.bind();
+	public boolean isPerto(float x,float z){
+		float x_cam = this.getX_camera();
+		float z_cam = this.getZ_camera();
 
-		do{
-			coord_x = 4.0f;
-			do{
-				gl.glBegin(GL.GL_QUADS);
-
-				gl.glTexCoord2f(1.0f, 0.0f);
-				gl.glVertex3f(coord_x, 0.0f, coord_z);
-
-				gl.glTexCoord2f(1.0f, 1.0f);
-				gl.glVertex3f(coord_x, 0.0f, (coord_z - 2.0f));
-
-				gl.glTexCoord2f(0.0f, 1.0f);
-				gl.glVertex3f((coord_x - 2.0f), 0.0f, (coord_z - 2.0f));
-
-				gl.glTexCoord2f(0.0f, 0.0f);
-				gl.glVertex3f((coord_x - 2.0f), 0.0f, coord_z);
-
-				gl.glEnd();
-
-				coord_x -= 2.0f;
-			}while(coord_x >= -90.0f);
-			coord_z -= 2.0f;
-		}while(coord_z >= -30.0f);
-
-		surface_emission[0] = 0.0f;
-		surface_emission[1] = 0.0f;
-		surface_emission[2] = 0.0f;
-		surface_emission[3] = 1.0f;
-		gl.glMaterialfv(GL.GL_FRONT, GL.GL_EMISSION, surface_emission, 0);
+		if(Math.sqrt(Math.pow(x-x_cam,2)+Math.pow(z-z_cam,2)) <= DISTANCIA_MAXIMA_)
+			return true;
+		else
+			return false;
 	}
 
 	private void lighting(GLAutoDrawable drawable) {
@@ -474,16 +540,6 @@ public class BandejaoOpengl extends GLJPanelInteractive{
             return false;
 	}
 
-	public boolean isPerto(float x,float z){
-		float x_cam = this.getX_camera();
-		float z_cam = this.getZ_camera();
-
-		if(Math.sqrt(Math.pow(x-x_cam,2)+Math.pow(z-z_cam,2)) <= DISTANCIA_MAXIMA_)
-			return true;
-		else
-			return false;
-	}
-
 	public static void main(String[] args) throws IOException {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -509,7 +565,6 @@ public class BandejaoOpengl extends GLJPanelInteractive{
     private static Catraca catraca;
 	private static Estante1 estante1;
 	private static Estante2 estante2;
-	private static Extintor extintor;
 	private static GradeEntrada gradeEntrada;
 	private static GradeMaquinaCartao gradeMaquinaCartao;
     private static GradeMaquinaCartao2 gradeMaquinaCartao2;
@@ -528,11 +583,17 @@ public class BandejaoOpengl extends GLJPanelInteractive{
 	//Objeto sem conflito
 	private static Disco1 disco1;
 	private static Disco2 disco2;
-
+	private static Teto teto;
 	
-    //Vetor de mesas e atributos
+    //Vetores de objetos
     private static ArrayList mesas_;
-    private static int DISTANCIA_MAXIMA_ = 20;
+	private static ArrayList pilares_;
+    private static int DISTANCIA_MAXIMA_ = 10;
+
+	//Paredes
+    private static ParedeBandeja paredeBandeja;
+    private static ParedeSol paredeSol;
+    private static ParedeCefer paredeCefer;
 
     //Variavel que armazena a textura
      private Texture paredeTexture;
