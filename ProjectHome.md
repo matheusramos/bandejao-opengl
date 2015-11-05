@@ -1,0 +1,1 @@
+Projeto referente ao trabalho da disciplina "Computação Gráfica" ministrada pelo "Prof. Fernando V. Paulovich" no primeiro semestre do ano de 2011.
